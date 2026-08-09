@@ -26,6 +26,16 @@ export const Route = createFileRoute("/team-registration")({
   component: TeamRegistration,
 });
 
+interface FormErrors {
+  name?: string;
+  leader?: string;
+  email?: string;
+  phone?: string;
+  campus?: string;
+  department?: string;
+  members?: string;
+}
+
 const emptyMember = (): TeamMember => ({ name: "", prn: "", department: "", year: "TE", skills: "" });
 
 function TeamRegistration() {
@@ -42,7 +52,7 @@ function TeamRegistration() {
     problemId: "",
   });
   const [members, setMembers] = useState<TeamMember[]>([emptyMember(), emptyMember(), emptyMember(), emptyMember()]);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<{ regId: string; id: string } | null>(null);
 
@@ -51,7 +61,7 @@ function TeamRegistration() {
     setMembers((m) => m.map((x, idx) => (idx === i ? { ...x, [k]: v } : x)));
 
   function validate() {
-    const e: Record<string, string> = {};
+    const e: FormErrors = {};
     if (form.name.trim().length < 3) e.name = "Team name must be at least 3 characters.";
     if (!form.leader.trim()) e.leader = "Team leader name is required.";
     if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(form.email)) e.email = "Enter a valid college email address.";
@@ -306,7 +316,7 @@ function TeamRegistration() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string | undefined; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <Label className="text-xs font-medium">{label}</Label>
