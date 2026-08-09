@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MyTeamRouteImport } from './routes/my-team'
+import { Route as ProblemsRouteImport } from './routes/problems'
 import { Route as TeamRegistrationRouteImport } from './routes/team-registration'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const MyTeamRoute = MyTeamRouteImport.update({
   path: '/my-team',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProblemsRoute = ProblemsRouteImport.update({
+  id: '/problems',
+  path: '/problems',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamRegistrationRoute = TeamRegistrationRouteImport.update({
   id: '/team-registration',
   path: '/team-registration',
@@ -32,30 +38,34 @@ const TeamRegistrationRoute = TeamRegistrationRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/my-team': typeof MyTeamRoute
+  '/problems': typeof ProblemsRoute
   '/team-registration': typeof TeamRegistrationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/my-team': typeof MyTeamRoute
+  '/problems': typeof ProblemsRoute
   '/team-registration': typeof TeamRegistrationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/my-team': typeof MyTeamRoute
+  '/problems': typeof ProblemsRoute
   '/team-registration': typeof TeamRegistrationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/my-team' | '/team-registration'
+  fullPaths: '/' | '/my-team' | '/problems' | '/team-registration'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/my-team' | '/team-registration'
-  id: '__root__' | '/' | '/my-team' | '/team-registration'
+  to: '/' | '/my-team' | '/problems' | '/team-registration'
+  id: '__root__' | '/' | '/my-team' | '/problems' | '/team-registration'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MyTeamRoute: typeof MyTeamRoute
+  ProblemsRoute: typeof ProblemsRoute
   TeamRegistrationRoute: typeof TeamRegistrationRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/problems': {
+      id: '/problems'
+      path: '/problems'
+      fullPath: '/problems'
+      preLoaderRoute: typeof ProblemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/team-registration': {
       id: '/team-registration'
       path: '/team-registration'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MyTeamRoute: MyTeamRoute,
+  ProblemsRoute: ProblemsRoute,
   TeamRegistrationRoute: TeamRegistrationRoute,
 }
 export const routeTree = rootRouteImport
