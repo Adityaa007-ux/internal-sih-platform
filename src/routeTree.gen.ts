@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalyzerRouteImport } from './routes/analyzer'
+import { Route as MyTeamRouteImport } from './routes/my-team'
+import { Route as ProblemsRouteImport } from './routes/problems'
+import { Route as ProposalRouteImport } from './routes/proposal'
+import { Route as RecommendationsRouteImport } from './routes/recommendations'
+import { Route as SimilarityRouteImport } from './routes/similarity'
+import { Route as TeamRegistrationRouteImport } from './routes/team-registration'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyzerRoute = AnalyzerRouteImport.update({
+  id: '/analyzer',
+  path: '/analyzer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyTeamRoute = MyTeamRouteImport.update({
+  id: '/my-team',
+  path: '/my-team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProblemsRoute = ProblemsRouteImport.update({
+  id: '/problems',
+  path: '/problems',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProposalRoute = ProposalRouteImport.update({
+  id: '/proposal',
+  path: '/proposal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsRoute = RecommendationsRouteImport.update({
+  id: '/recommendations',
+  path: '/recommendations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimilarityRoute = SimilarityRouteImport.update({
+  id: '/similarity',
+  path: '/similarity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRegistrationRoute = TeamRegistrationRouteImport.update({
+  id: '/team-registration',
+  path: '/team-registration',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analyzer': typeof AnalyzerRoute
+  '/my-team': typeof MyTeamRoute
+  '/problems': typeof ProblemsRoute
+  '/proposal': typeof ProposalRoute
+  '/recommendations': typeof RecommendationsRoute
+  '/similarity': typeof SimilarityRoute
+  '/team-registration': typeof TeamRegistrationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analyzer': typeof AnalyzerRoute
+  '/my-team': typeof MyTeamRoute
+  '/problems': typeof ProblemsRoute
+  '/proposal': typeof ProposalRoute
+  '/recommendations': typeof RecommendationsRoute
+  '/similarity': typeof SimilarityRoute
+  '/team-registration': typeof TeamRegistrationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analyzer': typeof AnalyzerRoute
+  '/my-team': typeof MyTeamRoute
+  '/problems': typeof ProblemsRoute
+  '/proposal': typeof ProposalRoute
+  '/recommendations': typeof RecommendationsRoute
+  '/similarity': typeof SimilarityRoute
+  '/team-registration': typeof TeamRegistrationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/analyzer'
+    | '/my-team'
+    | '/problems'
+    | '/proposal'
+    | '/recommendations'
+    | '/similarity'
+    | '/team-registration'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/analyzer'
+    | '/my-team'
+    | '/problems'
+    | '/proposal'
+    | '/recommendations'
+    | '/similarity'
+    | '/team-registration'
+  id:
+    | '__root__'
+    | '/'
+    | '/analyzer'
+    | '/my-team'
+    | '/problems'
+    | '/proposal'
+    | '/recommendations'
+    | '/similarity'
+    | '/team-registration'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyzerRoute: typeof AnalyzerRoute
+  MyTeamRoute: typeof MyTeamRoute
+  ProblemsRoute: typeof ProblemsRoute
+  ProposalRoute: typeof ProposalRoute
+  RecommendationsRoute: typeof RecommendationsRoute
+  SimilarityRoute: typeof SimilarityRoute
+  TeamRegistrationRoute: typeof TeamRegistrationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +143,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analyzer': {
+      id: '/analyzer'
+      path: '/analyzer'
+      fullPath: '/analyzer'
+      preLoaderRoute: typeof AnalyzerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-team': {
+      id: '/my-team'
+      path: '/my-team'
+      fullPath: '/my-team'
+      preLoaderRoute: typeof MyTeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/problems': {
+      id: '/problems'
+      path: '/problems'
+      fullPath: '/problems'
+      preLoaderRoute: typeof ProblemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proposal': {
+      id: '/proposal'
+      path: '/proposal'
+      fullPath: '/proposal'
+      preLoaderRoute: typeof ProposalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommendations': {
+      id: '/recommendations'
+      path: '/recommendations'
+      fullPath: '/recommendations'
+      preLoaderRoute: typeof RecommendationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/similarity': {
+      id: '/similarity'
+      path: '/similarity'
+      fullPath: '/similarity'
+      preLoaderRoute: typeof SimilarityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team-registration': {
+      id: '/team-registration'
+      path: '/team-registration'
+      fullPath: '/team-registration'
+      preLoaderRoute: typeof TeamRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyzerRoute: AnalyzerRoute,
+  MyTeamRoute: MyTeamRoute,
+  ProblemsRoute: ProblemsRoute,
+  ProposalRoute: ProposalRoute,
+  RecommendationsRoute: RecommendationsRoute,
+  SimilarityRoute: SimilarityRoute,
+  TeamRegistrationRoute: TeamRegistrationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
