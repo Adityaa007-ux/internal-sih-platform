@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAnalyzerRouteImport } from './routes/_authenticated/analyzer'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated/my-team'
@@ -24,47 +25,51 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAnalyzerRoute = AuthenticatedAnalyzerRouteImport.update({
-  id: '/_authenticated/analyzer',
-  path: '/analyzer',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAnalyzerRoute = AuthenticatedAnalyzerRouteImport.update({
+  id: '/analyzer',
+  path: '/analyzer',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/_authenticated/dashboard',
+  id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMyTeamRoute = AuthenticatedMyTeamRouteImport.update({
-  id: '/_authenticated/my-team',
+  id: '/my-team',
   path: '/my-team',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProblemsRoute = AuthenticatedProblemsRouteImport.update({
-  id: '/_authenticated/problems',
+  id: '/problems',
   path: '/problems',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProposalRoute = AuthenticatedProposalRouteImport.update({
-  id: '/_authenticated/proposal',
+  id: '/proposal',
   path: '/proposal',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRecommendationsRoute =
   AuthenticatedRecommendationsRouteImport.update({
-    id: '/_authenticated/recommendations',
+    id: '/recommendations',
     path: '/recommendations',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSimilarityRoute = AuthenticatedSimilarityRouteImport.update({
-  id: '/_authenticated/similarity',
+  id: '/similarity',
   path: '/similarity',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTeamRegistrationRoute =
   AuthenticatedTeamRegistrationRouteImport.update({
-    id: '/_authenticated/team-registration',
+    id: '/team-registration',
     path: '/team-registration',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -92,6 +97,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/analyzer': typeof AuthenticatedAnalyzerRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
@@ -127,6 +133,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/_authenticated/analyzer'
     | '/_authenticated/dashboard'
     | '/_authenticated/my-team'
@@ -139,14 +146,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedAnalyzerRoute: typeof AuthenticatedAnalyzerRoute
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
-  AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
-  AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
-  AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
-  AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
-  AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -158,67 +158,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/analyzer': {
       id: '/_authenticated/analyzer'
       path: '/analyzer'
       fullPath: '/analyzer'
       preLoaderRoute: typeof AuthenticatedAnalyzerRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/my-team': {
       id: '/_authenticated/my-team'
       path: '/my-team'
       fullPath: '/my-team'
       preLoaderRoute: typeof AuthenticatedMyTeamRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/problems': {
       id: '/_authenticated/problems'
       path: '/problems'
       fullPath: '/problems'
       preLoaderRoute: typeof AuthenticatedProblemsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/proposal': {
       id: '/_authenticated/proposal'
       path: '/proposal'
       fullPath: '/proposal'
       preLoaderRoute: typeof AuthenticatedProposalRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/recommendations': {
       id: '/_authenticated/recommendations'
       path: '/recommendations'
       fullPath: '/recommendations'
       preLoaderRoute: typeof AuthenticatedRecommendationsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/similarity': {
       id: '/_authenticated/similarity'
       path: '/similarity'
       fullPath: '/similarity'
       preLoaderRoute: typeof AuthenticatedSimilarityRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/team-registration': {
       id: '/_authenticated/team-registration'
       path: '/team-registration'
       fullPath: '/team-registration'
       preLoaderRoute: typeof AuthenticatedTeamRegistrationRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAnalyzerRoute: typeof AuthenticatedAnalyzerRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
+  AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
+  AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
+  AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
+  AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
+  AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyzerRoute: AuthenticatedAnalyzerRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
@@ -227,6 +244,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
   AuthenticatedTeamRegistrationRoute: AuthenticatedTeamRegistrationRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
