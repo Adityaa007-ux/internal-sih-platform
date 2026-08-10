@@ -95,7 +95,8 @@ export const upsertAnnouncement = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase.from("announcements").upsert(data);
+    const { id, ...rest } = data;
+    const { error } = await context.supabase.from("announcements").upsert(id ? { ...rest, id } : rest);
     if (error) throw new Error(error.message);
     await audit(context, data.id ? "announcement.update" : "announcement.create", data.title);
     return { ok: true };
@@ -137,9 +138,9 @@ export const upsertDeadline = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase
-      .from("deadlines")
-      .upsert({ ...data, due_at: new Date(data.due_at).toISOString() });
+    const { id, ...rest } = data;
+    const row = { ...rest, due_at: new Date(data.due_at).toISOString() };
+    const { error } = await context.supabase.from("deadlines").upsert(id ? { ...row, id } : row);
     if (error) throw new Error(error.message);
     await audit(context, data.id ? "deadline.update" : "deadline.create", data.label);
     return { ok: true };
@@ -184,7 +185,8 @@ export const upsertMentor = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase.from("mentors").upsert(data);
+    const { id, ...rest } = data;
+    const { error } = await context.supabase.from("mentors").upsert(id ? { ...rest, id } : rest);
     if (error) throw new Error(error.message);
     await audit(context, data.id ? "mentor.update" : "mentor.create", data.name);
     return { ok: true };
@@ -231,9 +233,9 @@ export const upsertResult = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase
-      .from("results")
-      .upsert({ ...data, published_at: data.published ? new Date().toISOString() : null });
+    const { id, ...rest } = data;
+    const row = { ...rest, published_at: data.published ? new Date().toISOString() : null };
+    const { error } = await context.supabase.from("results").upsert(id ? { ...row, id } : row);
     if (error) throw new Error(error.message);
     await audit(context, data.id ? "result.update" : "result.create", `${data.team_ref} → ${data.status}`);
     return { ok: true };
