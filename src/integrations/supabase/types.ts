@@ -14,16 +14,300 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_allowlist: {
+        Row: {
+          created_at: string
+          email: string
+          note: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          note?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          note?: string | null
+        }
+        Relationships: []
+      }
+      announcements: {
+        Row: {
+          archived: boolean
+          body: string
+          created_at: string
+          id: string
+          published: boolean
+          tag: string
+          title: string
+        }
+        Insert: {
+          archived?: boolean
+          body?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          tag?: string
+          title: string
+        }
+        Update: {
+          archived?: boolean
+          body?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          tag?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor: string | null
+          actor_label: string
+          created_at: string
+          detail: string
+          id: string
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          actor_label?: string
+          created_at?: string
+          detail?: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          actor_label?: string
+          created_at?: string
+          detail?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      deadlines: {
+        Row: {
+          created_at: string
+          description: string
+          due_at: string
+          id: string
+          label: string
+          published: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          due_at: string
+          id?: string
+          label: string
+          published?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          due_at?: string
+          id?: string
+          label?: string
+          published?: boolean
+        }
+        Relationships: []
+      }
+      mentors: {
+        Row: {
+          active: boolean
+          assigned_team: string | null
+          created_at: string
+          department: string
+          email: string | null
+          expertise: string
+          id: string
+          kind: string
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          assigned_team?: string | null
+          created_at?: string
+          department?: string
+          email?: string | null
+          expertise?: string
+          id?: string
+          kind?: string
+          name: string
+        }
+        Update: {
+          active?: boolean
+          assigned_team?: string | null
+          created_at?: string
+          department?: string
+          email?: string | null
+          expertise?: string
+          id?: string
+          kind?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      otp_challenges: {
+        Row: {
+          attempts: number
+          channel: string
+          code_hash: string
+          consumed: boolean
+          contact: string
+          created_at: string
+          expires_at: string
+          full_name: string | null
+          id: string
+          prn: string | null
+          purpose: string
+        }
+        Insert: {
+          attempts?: number
+          channel: string
+          code_hash: string
+          consumed?: boolean
+          contact: string
+          created_at?: string
+          expires_at: string
+          full_name?: string | null
+          id?: string
+          prn?: string | null
+          purpose?: string
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          code_hash?: string
+          consumed?: boolean
+          contact?: string
+          created_at?: string
+          expires_at?: string
+          full_name?: string | null
+          id?: string
+          prn?: string | null
+          purpose?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          campus: string | null
+          created_at: string
+          department: string | null
+          email: string | null
+          full_name: string
+          id: string
+          mobile: string | null
+          prn: string
+          status: string
+          updated_at: string
+          verified_channel: string
+        }
+        Insert: {
+          campus?: string | null
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          full_name?: string
+          id: string
+          mobile?: string | null
+          prn: string
+          status?: string
+          updated_at?: string
+          verified_channel?: string
+        }
+        Update: {
+          campus?: string | null
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          mobile?: string | null
+          prn?: string
+          status?: string
+          updated_at?: string
+          verified_channel?: string
+        }
+        Relationships: []
+      }
+      results: {
+        Row: {
+          created_at: string
+          final_score: number | null
+          id: string
+          published: boolean
+          published_at: string | null
+          remarks: string
+          status: string
+          team_name: string
+          team_ref: string
+        }
+        Insert: {
+          created_at?: string
+          final_score?: number | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          remarks?: string
+          status?: string
+          team_name?: string
+          team_ref: string
+        }
+        Update: {
+          created_at?: string
+          final_score?: number | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          remarks?: string
+          status?: string
+          team_name?: string
+          team_ref?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "student" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +434,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["student", "admin"],
+    },
   },
 } as const
