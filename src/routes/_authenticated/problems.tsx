@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/problems")({
+export const Route = createFileRoute("/_authenticated/problems")({
   head: () => ({
     meta: [
       { title: "Problem Explorer — JGI-SIH Portal" },

@@ -8,7 +8,7 @@ import { problemById } from "@/lib/demo-data";
 import { AiProcessing, DemoBadge, EmptyState, PageHeader, ScoreBar, ScoreRing, StatusPill } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/analyzer")({
+export const Route = createFileRoute("/_authenticated/analyzer")({
   head: () => ({
     meta: [
       { title: "AI Proposal Analyzer — JGI-SIH Portal" },

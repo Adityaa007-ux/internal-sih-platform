@@ -21,7 +21,7 @@ import { DEADLINES, DEMO_USERS, problemById } from "@/lib/demo-data";
 import { DemoBadge, EmptyState, PageHeader, StagePipeline, StatCard, StatusPill } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — JGI-SIH | JSPM Group Internal SIH Portal" },

@@ -8,7 +8,7 @@ import { DemoBadge, EmptyState, PageHeader, StatusPill } from "@/components/comm
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export const Route = createFileRoute("/recommendations")({
+export const Route = createFileRoute("/_authenticated/recommendations")({
   head: () => ({
     meta: [
       { title: "AI Problem Recommendations — JGI-SIH Portal" },

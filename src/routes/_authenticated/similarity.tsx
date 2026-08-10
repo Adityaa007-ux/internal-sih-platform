@@ -7,7 +7,7 @@ import { useStore } from "@/lib/store";
 import { AiProcessing, DemoBadge, EmptyState, PageHeader, ScoreRing, StatusPill } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/similarity")({
+export const Route = createFileRoute("/_authenticated/similarity")({
   head: () => ({
     meta: [
       { title: "AI Similarity Detection — JGI-SIH Portal" },
