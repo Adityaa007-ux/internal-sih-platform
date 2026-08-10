@@ -1,447 +1,337 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 import {
-  ArrowRight,
-  BarChart3,
-  Bell,
-  CalendarClock,
-  CheckCircle2,
-  ClipboardList,
-  FileSearch,
-  FileText,
-  GitCompareArrows,
-  LayoutDashboard,
-  ListChecks,
+  ArrowLeft,
+  BadgeCheck,
+  Bot,
+  BrainCircuit,
+  GraduationCap,
+  Loader2,
+  Mail,
+  ShieldCheck,
+  Smartphone,
   Sparkles,
-  TriangleAlert,
-  Trophy,
-  Users,
 } from "lucide-react";
-import { useStore, combinedScore } from "@/lib/store";
-import { DEADLINES, DEMO_USERS, problemById } from "@/lib/demo-data";
-import { DemoBadge, EmptyState, PageHeader, StagePipeline, StatCard, StatusPill } from "@/components/common";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { startOtp, verifyOtp, type StartOtpResult } from "@/lib/auth.functions";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — JGI-SIH | JSPM Group Internal SIH Portal" },
+      { title: "Sign in — JGI-SIH | JSPM Group Internal SIH Portal" },
       {
         name: "description",
         content:
-          "Track your Internal SIH team status, AI proposal score, similarity risk and selection stage in the JSPM Group Internal SIH Portal.",
+          "Secure PRN and OTP verified sign in for students and administrators of the JSPM Group Internal Smart India Hackathon portal.",
       },
-      { property: "og:title", content: "JGI-SIH Dashboard — JSPM Group Internal SIH Portal" },
+      { property: "og:title", content: "JGI-SIH — JSPM Group Internal SIH Portal" },
       {
         property: "og:description",
-        content: "AI-powered Internal Smart India Hackathon management and evaluation platform for JSPM Group campuses.",
+        content: "AI-powered Internal Smart India Hackathon registration, evaluation and selection platform for JSPM Group.",
       },
     ],
   }),
-  component: Dashboard,
+  component: AuthPage,
 });
 
-function Dashboard() {
-  const { role } = useStore();
-  if (role === "student") return <StudentDashboard />;
-  if (role === "faculty") return <FacultyDashboard />;
-  if (role === "mentor") return <MentorDashboard />;
-  return <AdminDashboard />;
-}
+type Mode = "login" | "signup";
+type Channel = "email" | "mobile";
 
-function QuickAction({ to, label, icon: Icon }: { to: string; label: string; icon: typeof Users }) {
-  return (
-    <Link
-      to={to}
-      className="surface-card flex items-center gap-3 p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40"
-    >
-      <span className="flex size-9 items-center justify-center rounded-lg bg-primary-soft text-primary">
-        <Icon className="size-4.5" />
-      </span>
-      <span className="text-sm font-medium">{label}</span>
-      <ArrowRight className="ml-auto size-4 text-muted-foreground" />
-    </Link>
-  );
-}
+function AuthPage() {
+  const navigate = useNavigate();
+  const start = useServerFn(startOtp);
+  const verify = useServerFn(verifyOtp);
 
-function UpcomingDeadlines() {
-  return (
-    <div className="surface-card p-5">
-      <div className="flex items-center gap-2">
-        <CalendarClock className="size-4 text-primary" />
-        <h2 className="font-display text-sm font-semibold">Deadlines</h2>
-      </div>
-      <ul className="mt-4 space-y-3">
-        {DEADLINES.map((d) => (
-          <li key={d.label} className="flex items-center gap-3">
-            <span
-              className={`size-2 shrink-0 rounded-full ${d.done ? "bg-success" : "bg-warning"}`}
-              aria-hidden
-            />
-            <span className={`flex-1 text-sm ${d.done ? "text-muted-foreground line-through" : "font-medium"}`}>
-              {d.label}
-            </span>
-            <span className="text-xs tabular-nums text-muted-foreground">
-              {new Date(d.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+  const [mode, setMode] = useState<Mode>("login");
+  const [channel, setChannel] = useState<Channel>("email");
+  const [prn, setPrn] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [contact, setContact] = useState("");
+  const [code, setCode] = useState("");
+  const [challenge, setChallenge] = useState<StartOtpResult | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [seconds, setSeconds] = useState(0);
 
-function AnnouncementList({ limit = 4 }: { limit?: number }) {
-  const { announcements } = useStore();
-  return (
-    <div className="surface-card p-5">
-      <div className="flex items-center gap-2">
-        <Bell className="size-4 text-primary" />
-        <h2 className="font-display text-sm font-semibold">Important announcements</h2>
-        <Link to="/announcements" className="ml-auto text-xs font-medium text-primary hover:underline">
-          View all
-        </Link>
-      </div>
-      <ul className="mt-4 space-y-3">
-        {announcements.slice(0, limit).map((a) => (
-          <li key={a.id} className="rounded-lg border border-border p-3">
-            <p className="text-sm font-medium">{a.title}</p>
-            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{a.body}</p>
-            <p className="mt-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-              {new Date(a.date).toLocaleDateString("en-IN", { dateStyle: "medium" })}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => {
+      if (data.session) void navigate({ to: "/dashboard" });
+    });
+  }, [navigate]);
 
-function StudentDashboard() {
-  const { currentTeam } = useStore();
-  const user = DEMO_USERS.student;
+  useEffect(() => {
+    if (seconds <= 0) return;
+    const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [seconds]);
 
-  if (!currentTeam) {
-    return (
-      <div className="space-y-6">
-        <PageHeader
-          title={`Welcome, ${user.name.split(" ")[0]}`}
-          description="You have not registered a team for Internal SIH 2026 yet."
-          icon={LayoutDashboard}
-        />
-        <EmptyState
-          icon={Users}
-          title="No team registered"
-          description="Register your team to unlock problem selection, proposal submission and the AI evaluation modules."
-          action={
-            <Button asChild>
-              <Link to="/team-registration">Register your team</Link>
-            </Button>
-          }
-        />
-      </div>
-    );
+  async function requestOtp() {
+    if (busy) return;
+    if (!prn.trim()) {
+      toast.error("PRN is required.");
+      return;
+    }
+    if (!contact.trim()) {
+      toast.error(channel === "email" ? "Email ID is required." : "Mobile number is required.");
+      return;
+    }
+    if (mode === "signup" && fullName.trim().length < 3) {
+      toast.error("Enter your full name.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await start({
+        data: { mode, prn, channel, contact, ...(mode === "signup" ? { fullName } : {}) },
+      });
+      setChallenge(res);
+      setCode("");
+      setSeconds(res.cooldownSeconds);
+      toast.success(res.demo ? `Demo OTP: ${res.demoCode}` : `OTP sent to ${res.maskedContact}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not send the OTP.");
+    } finally {
+      setBusy(false);
+    }
   }
 
-  const problem = problemById(currentTeam.problemId);
+  async function submitOtp() {
+    if (busy || !challenge) return;
+    setBusy(true);
+    try {
+      const res = await verify({ data: { challengeId: challenge.challengeId, code } });
+      const { error } = await supabase.auth.verifyOtp({ token_hash: res.tokenHash, type: "email" });
+      if (error) throw new Error(error.message);
+      toast.success(res.role === "admin" ? "Signed in to the Admin Portal." : "Verification successful.");
+      await navigate({ to: res.role === "admin" ? "/admin" : "/dashboard" });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Verification failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={`Welcome back, ${user.name.split(" ")[0]}`}
-        description={`${currentTeam.name} · ${currentTeam.campus} · Internal SIH 2026`}
-        icon={LayoutDashboard}
-        actions={
-          <>
-            <DemoBadge />
-            <Button asChild variant="outline">
-              <Link to="/my-team">My team</Link>
-            </Button>
-            <Button asChild>
-              <Link to="/analyzer">Run AI analysis</Link>
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Registration ID" value={<span className="text-base">{currentTeam.regId}</span>} hint={currentTeam.locked ? "Team locked" : "Editable"} icon={Users} />
-        <StatCard label="Proposal status" value={<StatusPill status={currentTeam.proposalStatus} />} hint={problem ? problem.id : "No problem selected"} icon={FileText} tone="info" />
-        <StatCard
-          label="AI proposal score"
-          value={currentTeam.ai ? `${currentTeam.ai.overall}/100` : "—"}
-          hint={currentTeam.ai ? "Decision support only" : "Not analysed yet"}
-          icon={Sparkles}
-          tone={currentTeam.ai && currentTeam.ai.overall >= 80 ? "success" : "default"}
-        />
-        <StatCard
-          label="Similarity risk"
-          value={currentTeam.similarity ? <StatusPill status={currentTeam.similarity.risk} /> : "—"}
-          hint={currentTeam.similarity ? `${currentTeam.similarity.score}% similarity` : "Not checked yet"}
-          icon={GitCompareArrows}
-          tone={currentTeam.similarity && currentTeam.similarity.score >= 60 ? "danger" : "success"}
-        />
-      </div>
-
-      <div className="surface-card p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h2 className="font-display text-sm font-semibold">Selection pipeline</h2>
-            <p className="text-xs text-muted-foreground">
-              Current stage: <span className="font-medium text-foreground">{currentTeam.stage}</span>
-            </p>
-          </div>
-          <StatusPill status={currentTeam.shortlist} />
-        </div>
-        <div className="mt-5">
-          <StagePipeline current={currentTeam.stage} />
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          <div className="surface-card p-5">
-            <h2 className="font-display text-sm font-semibold">Selected problem statement</h2>
-            {problem ? (
-              <div className="mt-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-md bg-primary-soft px-2 py-0.5 font-display text-xs font-bold text-primary">{problem.id}</span>
-                  <StatusPill status={problem.difficulty === "Hard" ? "High" : problem.difficulty === "Medium" ? "Moderate" : "Low"} />
-                  <span className="text-xs text-muted-foreground">{problem.organization}</span>
-                </div>
-                <h3 className="mt-2 font-display text-lg font-semibold">{problem.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{problem.description}</p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {problem.tags.map((t) => (
-                    <span key={t} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <p className="text-sm text-muted-foreground">No problem statement selected yet.</p>
-                <Button asChild size="sm">
-                  <Link to="/problems">Explore problems</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <QuickAction to="/problems" label="Explore problem statements" icon={FileSearch} />
-            <QuickAction to="/proposal" label="Edit / submit proposal" icon={FileText} />
-            <QuickAction to="/analyzer" label="Analyze proposal with AI" icon={Sparkles} />
-            <QuickAction to="/similarity" label="Run similarity detection" icon={GitCompareArrows} />
-            <QuickAction to="/recommendations" label="Get AI recommendations" icon={BarChart3} />
-            <QuickAction to="/presentation" label="Presentation schedule" icon={CalendarClock} />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <UpcomingDeadlines />
-          <AnnouncementList />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FacultyDashboard() {
-  const { teams } = useStore();
-  const submitted = teams.filter((t) => t.proposal && t.proposalStatus !== "Draft");
-  const pending = submitted.filter((t) => !t.review);
-  const highRisk = teams.filter((t) => t.similarity && t.similarity.score >= 60);
-  const shortlisted = teams.filter((t) => t.shortlist === "Shortlisted");
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Faculty dashboard"
-        description="Review submitted proposals with AI decision support, record evaluation scores and manage the shortlist."
-        icon={CheckCircle2}
-        actions={
-          <>
-            <DemoBadge />
-            <Button asChild>
-              <Link to="/faculty-review">Open review queue</Link>
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Submitted proposals" value={submitted.length} hint={`${teams.length} teams registered`} icon={ClipboardList} />
-        <StatCard label="Pending your review" value={pending.length} hint="Awaiting faculty score" icon={CheckCircle2} tone="warning" />
-        <StatCard label="High similarity cases" value={highRisk.length} hint="Need side-by-side comparison" icon={TriangleAlert} tone="danger" />
-        <StatCard label="Shortlisted" value={shortlisted.length} hint="Proceeding to offline round" icon={ListChecks} tone="success" />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="surface-card overflow-hidden lg:col-span-2">
-          <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <h2 className="font-display text-sm font-semibold">Review queue</h2>
-            <Link to="/faculty-review" className="text-xs font-medium text-primary hover:underline">
-              Go to Faculty Review
-            </Link>
-          </div>
-          {pending.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-muted-foreground">All submitted proposals have been reviewed.</p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {pending.map((t) => (
-                <li key={t.id} className="flex flex-wrap items-center gap-3 px-5 py-3.5">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{t.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {t.proposal?.title} · {t.problemId}
-                    </p>
-                  </div>
-                  <span className="text-xs">
-                    AI <strong className="font-display tabular-nums">{t.ai?.overall ?? "—"}</strong>
-                  </span>
-                  {t.similarity ? <StatusPill status={t.similarity.risk} /> : null}
-                  <Button asChild size="sm" variant="outline">
-                    <Link to="/faculty-review">Review</Link>
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div className="space-y-4">
-          <UpcomingDeadlines />
-          <AnnouncementList limit={3} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MentorDashboard() {
-  const { teams } = useStore();
-  const mine = teams.filter((t) => t.mentor === DEMO_USERS.mentor.name);
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Mentor dashboard"
-        description="Track the teams assigned to you, review their proposals and share improvement feedback."
-        icon={Users}
-        actions={<DemoBadge />}
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Assigned teams" value={mine.length} icon={Users} />
-        <StatCard label="Proposals submitted" value={mine.filter((t) => t.proposal && t.proposalStatus !== "Draft").length} icon={FileText} tone="info" />
-        <StatCard label="AI analysed" value={mine.filter((t) => t.ai).length} icon={Sparkles} />
-        <StatCard label="Shortlisted" value={mine.filter((t) => t.shortlist === "Shortlisted").length} icon={ListChecks} tone="success" />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          {mine.map((t) => (
-            <div key={t.id} className="surface-card p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h3 className="font-display font-semibold">{t.name}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {t.regId} · {t.campus} · {t.members.length} members
-                  </p>
-                </div>
-                <StatusPill status={t.proposalStatus} />
-              </div>
-              <p className="mt-3 text-sm">{t.proposal?.title ?? "Proposal not started"}</p>
-              <div className="mt-3">
-                <StagePipeline current={t.stage} compact />
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button asChild size="sm" variant="outline">
-                  <Link to="/faculty-review">Open proposal</Link>
-                </Button>
-                <Button asChild size="sm" variant="ghost">
-                  <Link to="/analyzer">AI analysis</Link>
-                </Button>
-              </div>
+    <main className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
+      <section className="relative hidden flex-col justify-between overflow-hidden brand-gradient p-10 text-primary-foreground lg:flex">
+        <div className="absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-32 -left-16 size-96 rounded-full bg-white/10 blur-3xl" />
+        <div className="relative">
+          <div className="flex items-center gap-3">
+            <span className="flex size-11 items-center justify-center rounded-xl bg-white/15">
+              <GraduationCap className="size-6" />
+            </span>
+            <div>
+              <p className="font-display text-lg font-bold leading-tight">JGI-SIH</p>
+              <p className="text-xs opacity-80">JSPM Group Internal SIH Portal</p>
             </div>
-          ))}
-        </div>
-        <div className="space-y-4">
-          <UpcomingDeadlines />
-          <AnnouncementList limit={3} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AdminDashboard() {
-  const { teams, resultsPublished } = useStore();
-  const ranked = [...teams].sort((a, b) => combinedScore(b) - combinedScore(a)).slice(0, 5);
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Admin dashboard"
-        description="Internal SIH 2026 across four JSPM Group campuses — registrations, evaluation progress and result publication."
-        icon={Trophy}
-        actions={
-          <>
-            <DemoBadge />
-            <Button asChild variant="outline">
-              <Link to="/analytics">Analytics</Link>
-            </Button>
-            <Button asChild>
-              <Link to="/results">Manage results</Link>
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Registered teams" value={teams.length} hint="Across 4 campuses" icon={Users} />
-        <StatCard label="Proposals submitted" value={teams.filter((t) => t.proposal && t.proposalStatus !== "Draft").length} icon={FileText} tone="info" />
-        <StatCard label="AI analyses run" value={teams.filter((t) => t.ai).length} icon={Sparkles} />
-        <StatCard
-          label="Results"
-          value={resultsPublished ? "Published" : "Unpublished"}
-          hint={resultsPublished ? "Visible to all users" : "Publish from Results page"}
-          icon={Trophy}
-          tone={resultsPublished ? "success" : "warning"}
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="surface-card overflow-hidden lg:col-span-2">
-          <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <h2 className="font-display text-sm font-semibold">Top ranked teams (combined evaluation)</h2>
-            <Link to="/shortlist" className="text-xs font-medium text-primary hover:underline">
-              Shortlist
-            </Link>
           </div>
-          <ul className="divide-y divide-border">
-            {ranked.map((t, i) => (
-              <li key={t.id} className="flex items-center gap-3 px-5 py-3.5">
-                <span className="flex size-7 items-center justify-center rounded-lg bg-primary-soft font-display text-xs font-bold text-primary">
-                  {i + 1}
+        </div>
+        <div className="relative max-w-md space-y-6">
+          <h1 className="font-display text-4xl font-bold leading-tight">
+            AI-powered Internal Smart India Hackathon management
+          </h1>
+          <p className="text-sm leading-relaxed opacity-90">
+            One platform for registration, problem selection, proposal submission, AI evaluation, similarity detection,
+            mentoring and final selection across all JSPM Group campuses.
+          </p>
+          <ul className="space-y-3 text-sm">
+            {[
+              { icon: BrainCircuit, t: "AI Proposal Analyzer with section-wise scoring" },
+              { icon: Sparkles, t: "Idea similarity & duplication detection" },
+              { icon: Bot, t: "24×7 AI Assistant for student guidance" },
+              { icon: ShieldCheck, t: "PRN + OTP verified access, role-based portals" },
+            ].map(({ icon: Icon, t }) => (
+              <li key={t} className="flex items-center gap-3">
+                <span className="flex size-8 items-center justify-center rounded-lg bg-white/15">
+                  <Icon className="size-4" />
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{t.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {t.campus} · {t.problemId ?? "No problem"}
-                  </p>
-                </div>
-                <span className="font-display text-sm font-bold tabular-nums">{combinedScore(t)}</span>
-                <StatusPill status={t.shortlist} />
+                {t}
               </li>
             ))}
           </ul>
         </div>
-        <div className="space-y-4">
-          <UpcomingDeadlines />
-          <AnnouncementList limit={3} />
+        <p className="relative text-xs opacity-70">© {new Date().getFullYear()} JSPM Group · Internal SIH 2026</p>
+      </section>
+
+      <section className="flex items-center justify-center bg-background px-5 py-10">
+        <div className="w-full max-w-md">
+          <div className="mb-6 flex items-center gap-3 lg:hidden">
+            <span className="flex size-10 items-center justify-center rounded-xl brand-gradient text-primary-foreground">
+              <GraduationCap className="size-5" />
+            </span>
+            <div>
+              <p className="font-display text-base font-bold">JGI-SIH</p>
+              <p className="text-xs text-muted-foreground">JSPM Group Internal SIH Portal</p>
+            </div>
+          </div>
+
+          {!challenge ? (
+            <div className="surface-card p-6">
+              <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg bg-secondary p-1">
+                {(["login", "signup"] as Mode[]).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className={cn(
+                      "rounded-md py-2 text-sm font-semibold transition-colors",
+                      mode === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {m === "login" ? "Login" : "Sign up"}
+                  </button>
+                ))}
+              </div>
+
+              <h2 className="font-display text-xl font-bold">
+                {mode === "login" ? "Welcome back" : "Create your JGI-SIH account"}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                PRN is mandatory. Verify with either your Email ID or Mobile Number.
+              </p>
+
+              <form
+                className="mt-5 space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void requestOtp();
+                }}
+              >
+                <Field label="PRN (Permanent Registration Number)" required>
+                  <input
+                    value={prn}
+                    onChange={(e) => setPrn(e.target.value)}
+                    placeholder="e.g. 72158847K"
+                    className="field"
+                    autoComplete="username"
+                  />
+                </Field>
+
+                {mode === "signup" && (
+                  <Field label="Full name" required>
+                    <input
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="As per college records"
+                      className="field"
+                    />
+                  </Field>
+                )}
+
+                <div>
+                  <p className="mb-2 text-xs font-semibold text-muted-foreground">Verification method</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      { id: "email" as Channel, label: "Email ID", icon: Mail },
+                      { id: "mobile" as Channel, label: "Mobile number", icon: Smartphone },
+                    ]).map(({ id, label, icon: Icon }) => (
+                      <button
+                        type="button"
+                        key={id}
+                        onClick={() => setChannel(id)}
+                        className={cn(
+                          "flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors",
+                          channel === id
+                            ? "border-primary bg-primary-soft text-primary"
+                            : "border-border hover:border-primary/40",
+                        )}
+                      >
+                        <Icon className="size-4" />
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <Field label={channel === "email" ? "Email ID" : "Mobile number"} required>
+                  <input
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                    placeholder={channel === "email" ? "name@jspm.edu.in" : "10-digit mobile number"}
+                    inputMode={channel === "mobile" ? "numeric" : "email"}
+                    className="field"
+                  />
+                </Field>
+
+                <Button type="submit" className="w-full" disabled={busy}>
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : null}
+                  Send OTP
+                </Button>
+              </form>
+
+              <p className="mt-4 rounded-lg bg-secondary px-3 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
+                Administrator accounts are granted from a server-side allowlist — signing in with an approved
+                institutional email automatically opens the Admin Portal.
+              </p>
+            </div>
+          ) : (
+            <div className="surface-card p-6">
+              <button
+                onClick={() => setChallenge(null)}
+                className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="size-3.5" /> Change details
+              </button>
+              <span className="flex size-11 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                <BadgeCheck className="size-5" />
+              </span>
+              <h2 className="mt-4 font-display text-xl font-bold">Verify your identity</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                We sent a 6-digit code to <strong className="text-foreground">{challenge.maskedContact}</strong>. It is
+                valid for 10 minutes.
+              </p>
+              {challenge.demo && challenge.demoCode ? (
+                <p className="mt-3 rounded-lg border border-warning/40 bg-warning-soft px-3 py-2 text-xs">
+                  Demo delivery mode — your code is <strong className="font-display tracking-widest">{challenge.demoCode}</strong>
+                </p>
+              ) : null}
+
+              <form
+                className="mt-5 space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void submitOtp();
+                }}
+              >
+                <input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder="••••••"
+                  inputMode="numeric"
+                  autoFocus
+                  className="field text-center font-display text-2xl tracking-[0.5em]"
+                />
+                <Button type="submit" className="w-full" disabled={busy || code.length !== 6}>
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : null}
+                  Verify & continue
+                </Button>
+              </form>
+
+              <button
+                onClick={() => void requestOtp()}
+                disabled={seconds > 0 || busy}
+                className="mt-4 w-full text-center text-xs font-medium text-primary disabled:text-muted-foreground"
+              >
+                {seconds > 0 ? `Resend code in ${seconds}s` : "Resend OTP"}
+              </button>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
+  );
+}
+
+function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">
+        {label} {required ? <span className="text-danger">*</span> : null}
+      </span>
+      {children}
+    </label>
   );
 }

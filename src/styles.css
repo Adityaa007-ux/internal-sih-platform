@@ -193,3 +193,18 @@
   scrollbar-color: var(--color-border) transparent;
 }
 
+
+@utility field {
+  height: 2.6rem;
+  width: 100%;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid var(--color-input);
+  background-color: var(--color-background);
+  padding-inline: 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+.field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 20%, transparent);
+}

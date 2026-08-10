@@ -50,7 +50,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: "Overview",
     items: [
-      { to: "/", label: "Dashboard", icon: LayoutDashboard, roles: ["student", "faculty", "mentor", "admin"] },
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["student", "faculty", "mentor", "admin"] },
     ],
   },
   {

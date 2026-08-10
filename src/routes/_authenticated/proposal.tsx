@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-export const Route = createFileRoute("/proposal")({
+export const Route = createFileRoute("/_authenticated/proposal")({
   head: () => ({
     meta: [
       { title: "Proposal Submission — JGI-SIH Portal" },

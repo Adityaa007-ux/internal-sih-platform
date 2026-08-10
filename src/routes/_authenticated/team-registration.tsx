@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export const Route = createFileRoute("/team-registration")({
+export const Route = createFileRoute("/_authenticated/team-registration")({
   head: () => ({
     meta: [
       { title: "Team Registration — JGI-SIH Portal" },

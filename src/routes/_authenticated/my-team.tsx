@@ -5,7 +5,7 @@ import { problemById } from "@/lib/demo-data";
 import { DemoBadge, EmptyState, PageHeader, StagePipeline, StatusPill } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/my-team")({
+export const Route = createFileRoute("/_authenticated/my-team")({
   head: () => ({
     meta: [
       { title: "My Team — JGI-SIH Portal" },

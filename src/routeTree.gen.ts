@@ -10,128 +10,165 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AnalyzerRouteImport } from './routes/analyzer'
-import { Route as MyTeamRouteImport } from './routes/my-team'
-import { Route as ProblemsRouteImport } from './routes/problems'
-import { Route as ProposalRouteImport } from './routes/proposal'
-import { Route as RecommendationsRouteImport } from './routes/recommendations'
-import { Route as SimilarityRouteImport } from './routes/similarity'
-import { Route as TeamRegistrationRouteImport } from './routes/team-registration'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedAnalyzerRouteImport } from './routes/_authenticated/analyzer'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated/my-team'
+import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticated/problems'
+import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticated/proposal'
+import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
+import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
+import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AnalyzerRoute = AnalyzerRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAnalyzerRoute = AuthenticatedAnalyzerRouteImport.update({
   id: '/analyzer',
   path: '/analyzer',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const MyTeamRoute = MyTeamRouteImport.update({
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMyTeamRoute = AuthenticatedMyTeamRouteImport.update({
   id: '/my-team',
   path: '/my-team',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ProblemsRoute = ProblemsRouteImport.update({
+const AuthenticatedProblemsRoute = AuthenticatedProblemsRouteImport.update({
   id: '/problems',
   path: '/problems',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ProposalRoute = ProposalRouteImport.update({
+const AuthenticatedProposalRoute = AuthenticatedProposalRouteImport.update({
   id: '/proposal',
   path: '/proposal',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const RecommendationsRoute = RecommendationsRouteImport.update({
-  id: '/recommendations',
-  path: '/recommendations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SimilarityRoute = SimilarityRouteImport.update({
+const AuthenticatedRecommendationsRoute =
+  AuthenticatedRecommendationsRouteImport.update({
+    id: '/recommendations',
+    path: '/recommendations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSimilarityRoute = AuthenticatedSimilarityRouteImport.update({
   id: '/similarity',
   path: '/similarity',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const TeamRegistrationRoute = TeamRegistrationRouteImport.update({
-  id: '/team-registration',
-  path: '/team-registration',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedTeamRegistrationRoute =
+  AuthenticatedTeamRegistrationRouteImport.update({
+    id: '/team-registration',
+    path: '/team-registration',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/analyzer': typeof AnalyzerRoute
-  '/my-team': typeof MyTeamRoute
-  '/problems': typeof ProblemsRoute
-  '/proposal': typeof ProposalRoute
-  '/recommendations': typeof RecommendationsRoute
-  '/similarity': typeof SimilarityRoute
-  '/team-registration': typeof TeamRegistrationRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/my-team': typeof AuthenticatedMyTeamRoute
+  '/problems': typeof AuthenticatedProblemsRoute
+  '/proposal': typeof AuthenticatedProposalRoute
+  '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/similarity': typeof AuthenticatedSimilarityRoute
+  '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/analyzer': typeof AnalyzerRoute
-  '/my-team': typeof MyTeamRoute
-  '/problems': typeof ProblemsRoute
-  '/proposal': typeof ProposalRoute
-  '/recommendations': typeof RecommendationsRoute
-  '/similarity': typeof SimilarityRoute
-  '/team-registration': typeof TeamRegistrationRoute
+  '/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/my-team': typeof AuthenticatedMyTeamRoute
+  '/problems': typeof AuthenticatedProblemsRoute
+  '/proposal': typeof AuthenticatedProposalRoute
+  '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/similarity': typeof AuthenticatedSimilarityRoute
+  '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/analyzer': typeof AnalyzerRoute
-  '/my-team': typeof MyTeamRoute
-  '/problems': typeof ProblemsRoute
-  '/proposal': typeof ProposalRoute
-  '/recommendations': typeof RecommendationsRoute
-  '/similarity': typeof SimilarityRoute
-  '/team-registration': typeof TeamRegistrationRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
+  '/_authenticated/problems': typeof AuthenticatedProblemsRoute
+  '/_authenticated/proposal': typeof AuthenticatedProposalRoute
+  '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
+  '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/analyzer'
+    | '/dashboard'
     | '/my-team'
     | '/problems'
     | '/proposal'
     | '/recommendations'
     | '/similarity'
     | '/team-registration'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/analyzer'
+    | '/dashboard'
     | '/my-team'
     | '/problems'
     | '/proposal'
     | '/recommendations'
     | '/similarity'
     | '/team-registration'
+    | '/admin'
   id:
     | '__root__'
     | '/'
-    | '/analyzer'
-    | '/my-team'
-    | '/problems'
-    | '/proposal'
-    | '/recommendations'
-    | '/similarity'
-    | '/team-registration'
+    | '/_authenticated'
+    | '/_authenticated/admin'
+    | '/_authenticated/analyzer'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/my-team'
+    | '/_authenticated/problems'
+    | '/_authenticated/proposal'
+    | '/_authenticated/recommendations'
+    | '/_authenticated/similarity'
+    | '/_authenticated/team-registration'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AnalyzerRoute: typeof AnalyzerRoute
-  MyTeamRoute: typeof MyTeamRoute
-  ProblemsRoute: typeof ProblemsRoute
-  ProposalRoute: typeof ProposalRoute
-  RecommendationsRoute: typeof RecommendationsRoute
-  SimilarityRoute: typeof SimilarityRoute
-  TeamRegistrationRoute: typeof TeamRegistrationRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -143,78 +180,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/analyzer': {
-      id: '/analyzer'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/analyzer': {
+      id: '/_authenticated/analyzer'
       path: '/analyzer'
       fullPath: '/analyzer'
-      preLoaderRoute: typeof AnalyzerRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedAnalyzerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/my-team': {
-      id: '/my-team'
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-team': {
+      id: '/_authenticated/my-team'
       path: '/my-team'
       fullPath: '/my-team'
-      preLoaderRoute: typeof MyTeamRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedMyTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/problems': {
-      id: '/problems'
+    '/_authenticated/problems': {
+      id: '/_authenticated/problems'
       path: '/problems'
       fullPath: '/problems'
-      preLoaderRoute: typeof ProblemsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProblemsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/proposal': {
-      id: '/proposal'
+    '/_authenticated/proposal': {
+      id: '/_authenticated/proposal'
       path: '/proposal'
       fullPath: '/proposal'
-      preLoaderRoute: typeof ProposalRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProposalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/recommendations': {
-      id: '/recommendations'
+    '/_authenticated/recommendations': {
+      id: '/_authenticated/recommendations'
       path: '/recommendations'
       fullPath: '/recommendations'
-      preLoaderRoute: typeof RecommendationsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedRecommendationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/similarity': {
-      id: '/similarity'
+    '/_authenticated/similarity': {
+      id: '/_authenticated/similarity'
       path: '/similarity'
       fullPath: '/similarity'
-      preLoaderRoute: typeof SimilarityRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSimilarityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/team-registration': {
-      id: '/team-registration'
+    '/_authenticated/team-registration': {
+      id: '/_authenticated/team-registration'
       path: '/team-registration'
       fullPath: '/team-registration'
-      preLoaderRoute: typeof TeamRegistrationRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedTeamRegistrationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedAnalyzerRoute: typeof AuthenticatedAnalyzerRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
+  AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
+  AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
+  AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
+  AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
+  AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedAnalyzerRoute: AuthenticatedAnalyzerRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
+  AuthenticatedProblemsRoute: AuthenticatedProblemsRoute,
+  AuthenticatedProposalRoute: AuthenticatedProposalRoute,
+  AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
+  AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
+  AuthenticatedTeamRegistrationRoute: AuthenticatedTeamRegistrationRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AnalyzerRoute: AnalyzerRoute,
-  MyTeamRoute: MyTeamRoute,
-  ProblemsRoute: ProblemsRoute,
-  ProposalRoute: ProposalRoute,
-  RecommendationsRoute: RecommendationsRoute,
-  SimilarityRoute: SimilarityRoute,
-  TeamRegistrationRoute: TeamRegistrationRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
