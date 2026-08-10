@@ -70,9 +70,18 @@ function AuthPage() {
 
   async function requestOtp() {
     if (busy) return;
-    if (!prn.trim()) return toast.error("PRN is required.");
-    if (!contact.trim()) return toast.error(channel === "email" ? "Email ID is required." : "Mobile number is required.");
-    if (mode === "signup" && fullName.trim().length < 3) return toast.error("Enter your full name.");
+    if (!prn.trim()) {
+      toast.error("PRN is required.");
+      return;
+    }
+    if (!contact.trim()) {
+      toast.error(channel === "email" ? "Email ID is required." : "Mobile number is required.");
+      return;
+    }
+    if (mode === "signup" && fullName.trim().length < 3) {
+      toast.error("Enter your full name.");
+      return;
+    }
     setBusy(true);
     try {
       const res = await start({

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAnalyzerRouteImport } from './routes/_authenticated/analyzer'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated/my-team'
@@ -18,6 +19,11 @@ import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_auth
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAnalyzerRoute = AuthenticatedAnalyzerRouteImport.update({
   id: '/_authenticated/analyzer',
   path: '/analyzer',
@@ -62,6 +68,7 @@ const AuthenticatedTeamRegistrationRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/analyzer': typeof AuthenticatedAnalyzerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/analyzer': typeof AuthenticatedAnalyzerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authenticated/analyzer': typeof AuthenticatedAnalyzerRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
@@ -95,6 +104,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/analyzer'
     | '/dashboard'
     | '/my-team'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
     | '/team-registration'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/analyzer'
     | '/dashboard'
     | '/my-team'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '/team-registration'
   id:
     | '__root__'
+    | '/'
     | '/_authenticated/analyzer'
     | '/_authenticated/dashboard'
     | '/_authenticated/my-team'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthenticatedAnalyzerRoute: typeof AuthenticatedAnalyzerRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
@@ -138,6 +151,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/analyzer': {
       id: '/_authenticated/analyzer'
       path: '/analyzer'
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthenticatedAnalyzerRoute: AuthenticatedAnalyzerRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
