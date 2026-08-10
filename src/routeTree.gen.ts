@@ -20,6 +20,7 @@ import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -77,10 +78,15 @@ const AuthenticatedTeamRegistrationRoute =
     path: '/team-registration',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/analyzer': typeof AuthenticatedAnalyzerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
@@ -89,10 +95,10 @@ export interface FileRoutesByFullPath {
   '/recommendations': typeof AuthenticatedRecommendationsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
   '/analyzer': typeof AuthenticatedAnalyzerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
@@ -101,12 +107,13 @@ export interface FileRoutesByTo {
   '/recommendations': typeof AuthenticatedRecommendationsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/analyzer': typeof AuthenticatedAnalyzerRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
@@ -115,6 +122,7 @@ export interface FileRoutesById {
   '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
   '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,10 +137,10 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/similarity'
     | '/team-registration'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/analyzer'
     | '/dashboard'
     | '/my-team'
@@ -141,6 +149,7 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/similarity'
     | '/team-registration'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/_authenticated/recommendations'
     | '/_authenticated/similarity'
     | '/_authenticated/team-registration'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -240,11 +250,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTeamRegistrationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAnalyzerRoute: typeof AuthenticatedAnalyzerRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
@@ -256,7 +287,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAnalyzerRoute: AuthenticatedAnalyzerRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
