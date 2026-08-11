@@ -12,15 +12,26 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedAnalyzerRouteImport } from './routes/_authenticated/analyzer'
+import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDeadlinesRouteImport } from './routes/_authenticated/deadlines'
+import { Route as AuthenticatedFacultyReviewRouteImport } from './routes/_authenticated/faculty-review'
 import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated/my-team'
+import { Route as AuthenticatedPresentationRouteImport } from './routes/_authenticated/presentation'
 import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticated/problems'
 import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticated/proposal'
 import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
+import { Route as AuthenticatedRepositoryRouteImport } from './routes/_authenticated/repository'
+import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedShortlistRouteImport } from './routes/_authenticated/shortlist'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
+import { Route as AuthenticatedSubmissionsRouteImport } from './routes/_authenticated/submissions'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,21 +47,49 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAnalyzerRoute = AuthenticatedAnalyzerRouteImport.update({
   id: '/analyzer',
   path: '/analyzer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnnouncementsRoute =
+  AuthenticatedAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDeadlinesRoute = AuthenticatedDeadlinesRouteImport.update({
+  id: '/deadlines',
+  path: '/deadlines',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFacultyReviewRoute =
+  AuthenticatedFacultyReviewRouteImport.update({
+    id: '/faculty-review',
+    path: '/faculty-review',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMyTeamRoute = AuthenticatedMyTeamRouteImport.update({
   id: '/my-team',
   path: '/my-team',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPresentationRoute =
+  AuthenticatedPresentationRouteImport.update({
+    id: '/presentation',
+    path: '/presentation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProblemsRoute = AuthenticatedProblemsRouteImport.update({
   id: '/problems',
   path: '/problems',
@@ -67,11 +106,37 @@ const AuthenticatedRecommendationsRoute =
     path: '/recommendations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRepositoryRoute = AuthenticatedRepositoryRouteImport.update({
+  id: '/repository',
+  path: '/repository',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedResultsRoute = AuthenticatedResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedShortlistRoute = AuthenticatedShortlistRouteImport.update({
+  id: '/shortlist',
+  path: '/shortlist',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSimilarityRoute = AuthenticatedSimilarityRouteImport.update({
   id: '/similarity',
   path: '/similarity',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSubmissionsRoute =
+  AuthenticatedSubmissionsRouteImport.update({
+    id: '/submissions',
+    path: '/submissions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTeamRegistrationRoute =
   AuthenticatedTeamRegistrationRouteImport.update({
     id: '/team-registration',
@@ -83,30 +148,58 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminStudentsRoute =
+  AuthenticatedAdminStudentsRouteImport.update({
+    id: '/students',
+    path: '/students',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/analytics': typeof AuthenticatedAnalyticsRoute
   '/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deadlines': typeof AuthenticatedDeadlinesRoute
+  '/faculty-review': typeof AuthenticatedFacultyReviewRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
+  '/presentation': typeof AuthenticatedPresentationRoute
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/repository': typeof AuthenticatedRepositoryRoute
+  '/results': typeof AuthenticatedResultsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/shortlist': typeof AuthenticatedShortlistRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
+  '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AuthenticatedAnalyticsRoute
   '/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deadlines': typeof AuthenticatedDeadlinesRoute
+  '/faculty-review': typeof AuthenticatedFacultyReviewRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
+  '/presentation': typeof AuthenticatedPresentationRoute
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/repository': typeof AuthenticatedRepositoryRoute
+  '/results': typeof AuthenticatedResultsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/shortlist': typeof AuthenticatedShortlistRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
+  '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -114,14 +207,25 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/deadlines': typeof AuthenticatedDeadlinesRoute
+  '/_authenticated/faculty-review': typeof AuthenticatedFacultyReviewRoute
   '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
+  '/_authenticated/presentation': typeof AuthenticatedPresentationRoute
   '/_authenticated/problems': typeof AuthenticatedProblemsRoute
   '/_authenticated/proposal': typeof AuthenticatedProposalRoute
   '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/_authenticated/repository': typeof AuthenticatedRepositoryRoute
+  '/_authenticated/results': typeof AuthenticatedResultsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/shortlist': typeof AuthenticatedShortlistRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
+  '/_authenticated/submissions': typeof AuthenticatedSubmissionsRoute
   '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -129,40 +233,73 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/analytics'
     | '/analyzer'
+    | '/announcements'
     | '/dashboard'
+    | '/deadlines'
+    | '/faculty-review'
     | '/my-team'
+    | '/presentation'
     | '/problems'
     | '/proposal'
     | '/recommendations'
+    | '/repository'
+    | '/results'
+    | '/settings'
+    | '/shortlist'
     | '/similarity'
+    | '/submissions'
     | '/team-registration'
+    | '/admin/students'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analytics'
     | '/analyzer'
+    | '/announcements'
     | '/dashboard'
+    | '/deadlines'
+    | '/faculty-review'
     | '/my-team'
+    | '/presentation'
     | '/problems'
     | '/proposal'
     | '/recommendations'
+    | '/repository'
+    | '/results'
+    | '/settings'
+    | '/shortlist'
     | '/similarity'
+    | '/submissions'
     | '/team-registration'
+    | '/admin/students'
     | '/admin'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/admin'
+    | '/_authenticated/analytics'
     | '/_authenticated/analyzer'
+    | '/_authenticated/announcements'
     | '/_authenticated/dashboard'
+    | '/_authenticated/deadlines'
+    | '/_authenticated/faculty-review'
     | '/_authenticated/my-team'
+    | '/_authenticated/presentation'
     | '/_authenticated/problems'
     | '/_authenticated/proposal'
     | '/_authenticated/recommendations'
+    | '/_authenticated/repository'
+    | '/_authenticated/results'
+    | '/_authenticated/settings'
+    | '/_authenticated/shortlist'
     | '/_authenticated/similarity'
+    | '/_authenticated/submissions'
     | '/_authenticated/team-registration'
+    | '/_authenticated/admin/students'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -194,11 +331,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/analytics': {
+      id: '/_authenticated/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/analyzer': {
       id: '/_authenticated/analyzer'
       path: '/analyzer'
       fullPath: '/analyzer'
       preLoaderRoute: typeof AuthenticatedAnalyzerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/announcements': {
+      id: '/_authenticated/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -208,11 +359,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/deadlines': {
+      id: '/_authenticated/deadlines'
+      path: '/deadlines'
+      fullPath: '/deadlines'
+      preLoaderRoute: typeof AuthenticatedDeadlinesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/faculty-review': {
+      id: '/_authenticated/faculty-review'
+      path: '/faculty-review'
+      fullPath: '/faculty-review'
+      preLoaderRoute: typeof AuthenticatedFacultyReviewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/my-team': {
       id: '/_authenticated/my-team'
       path: '/my-team'
       fullPath: '/my-team'
       preLoaderRoute: typeof AuthenticatedMyTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/presentation': {
+      id: '/_authenticated/presentation'
+      path: '/presentation'
+      fullPath: '/presentation'
+      preLoaderRoute: typeof AuthenticatedPresentationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/problems': {
@@ -236,11 +408,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecommendationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/repository': {
+      id: '/_authenticated/repository'
+      path: '/repository'
+      fullPath: '/repository'
+      preLoaderRoute: typeof AuthenticatedRepositoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/results': {
+      id: '/_authenticated/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof AuthenticatedResultsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/shortlist': {
+      id: '/_authenticated/shortlist'
+      path: '/shortlist'
+      fullPath: '/shortlist'
+      preLoaderRoute: typeof AuthenticatedShortlistRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/similarity': {
       id: '/_authenticated/similarity'
       path: '/similarity'
       fullPath: '/similarity'
       preLoaderRoute: typeof AuthenticatedSimilarityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/submissions': {
+      id: '/_authenticated/submissions'
+      path: '/submissions'
+      fullPath: '/submissions'
+      preLoaderRoute: typeof AuthenticatedSubmissionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/team-registration': {
@@ -257,15 +464,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/students': {
+      id: '/_authenticated/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AuthenticatedAdminStudentsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminStudentsRoute: typeof AuthenticatedAdminStudentsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminStudentsRoute: AuthenticatedAdminStudentsRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
 
@@ -276,25 +492,45 @@ const AuthenticatedAdminRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedAnalyzerRoute: typeof AuthenticatedAnalyzerRoute
+  AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDeadlinesRoute: typeof AuthenticatedDeadlinesRoute
+  AuthenticatedFacultyReviewRoute: typeof AuthenticatedFacultyReviewRoute
   AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
+  AuthenticatedPresentationRoute: typeof AuthenticatedPresentationRoute
   AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
   AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
   AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
+  AuthenticatedRepositoryRoute: typeof AuthenticatedRepositoryRoute
+  AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedShortlistRoute: typeof AuthenticatedShortlistRoute
   AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
+  AuthenticatedSubmissionsRoute: typeof AuthenticatedSubmissionsRoute
   AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedAnalyzerRoute: AuthenticatedAnalyzerRoute,
+  AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDeadlinesRoute: AuthenticatedDeadlinesRoute,
+  AuthenticatedFacultyReviewRoute: AuthenticatedFacultyReviewRoute,
   AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
+  AuthenticatedPresentationRoute: AuthenticatedPresentationRoute,
   AuthenticatedProblemsRoute: AuthenticatedProblemsRoute,
   AuthenticatedProposalRoute: AuthenticatedProposalRoute,
   AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
+  AuthenticatedRepositoryRoute: AuthenticatedRepositoryRoute,
+  AuthenticatedResultsRoute: AuthenticatedResultsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedShortlistRoute: AuthenticatedShortlistRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
+  AuthenticatedSubmissionsRoute: AuthenticatedSubmissionsRoute,
   AuthenticatedTeamRegistrationRoute: AuthenticatedTeamRegistrationRoute,
 }
 
