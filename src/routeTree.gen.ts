@@ -24,6 +24,7 @@ import { Route as AuthenticatedRepositoryRouteImport } from './routes/_authentic
 import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
+import { Route as AuthenticatedSubmissionsRouteImport } from './routes/_authenticated/submissions'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 
@@ -103,6 +104,12 @@ const AuthenticatedSimilarityRoute = AuthenticatedSimilarityRouteImport.update({
   path: '/similarity',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSubmissionsRoute =
+  AuthenticatedSubmissionsRouteImport.update({
+    id: '/submissions',
+    path: '/submissions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTeamRegistrationRoute =
   AuthenticatedTeamRegistrationRouteImport.update({
     id: '/team-registration',
@@ -130,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/results': typeof AuthenticatedResultsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
+  '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -147,6 +155,7 @@ export interface FileRoutesByTo {
   '/results': typeof AuthenticatedResultsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
+  '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
@@ -167,6 +176,7 @@ export interface FileRoutesById {
   '/_authenticated/results': typeof AuthenticatedResultsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
+  '/_authenticated/submissions': typeof AuthenticatedSubmissionsRoute
   '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/results'
     | '/settings'
     | '/similarity'
+    | '/submissions'
     | '/team-registration'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/results'
     | '/settings'
     | '/similarity'
+    | '/submissions'
     | '/team-registration'
     | '/admin'
   id:
@@ -223,6 +235,7 @@ export interface FileRouteTypes {
     | '/_authenticated/results'
     | '/_authenticated/settings'
     | '/_authenticated/similarity'
+    | '/_authenticated/submissions'
     | '/_authenticated/team-registration'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
@@ -339,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSimilarityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/submissions': {
+      id: '/_authenticated/submissions'
+      path: '/submissions'
+      fullPath: '/submissions'
+      preLoaderRoute: typeof AuthenticatedSubmissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/team-registration': {
       id: '/_authenticated/team-registration'
       path: '/team-registration'
@@ -384,6 +404,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
+  AuthenticatedSubmissionsRoute: typeof AuthenticatedSubmissionsRoute
   AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
 }
 
@@ -401,6 +422,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedResultsRoute: AuthenticatedResultsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
+  AuthenticatedSubmissionsRoute: AuthenticatedSubmissionsRoute,
   AuthenticatedTeamRegistrationRoute: AuthenticatedTeamRegistrationRoute,
 }
 
