@@ -52,11 +52,10 @@ function FacultyReviewPage() {
     if (!active) return;
     const review: FacultyReview = {
       reviewer: "Prof. S. R. Kulkarni",
-      date: new Date().toISOString(),
-      scores: Object.fromEntries(CRITERIA.map((c) => [c.key, scores[c.key] ?? 0])) as FacultyReview["scores"],
+      reviewedAt: new Date().toISOString(),
+      scores: Object.fromEntries(CRITERIA.map((c) => [c.key, scores[c.key] ?? 0])),
       total,
       comments: comment,
-      recommendation: total >= 40 ? "Shortlist" : "Hold",
     };
     saveReview(active.id, review);
     toast.success(`Evaluation saved for ${active.name}`);
@@ -109,8 +108,8 @@ function FacultyReviewPage() {
               ) : null}
               {active.ai ? (
                 <div className="mt-4 space-y-2">
-                  {active.ai.criteria.map((c) => (
-                    <ScoreBar key={c.key} label={c.label} score={c.score} />
+                  {active.ai.breakdown.map((c) => (
+                    <ScoreBar key={c.label} label={c.label} score={c.score} />
                   ))}
                 </div>
               ) : null}
