@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAnalyzerRouteImport } from './routes/_authenticated/analyzer'
+import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated/my-team'
 import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticated/problems'
@@ -41,6 +42,12 @@ const AuthenticatedAnalyzerRoute = AuthenticatedAnalyzerRouteImport.update({
   path: '/analyzer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnnouncementsRoute =
+  AuthenticatedAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -88,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
   '/problems': typeof AuthenticatedProblemsRoute
@@ -100,6 +108,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
   '/problems': typeof AuthenticatedProblemsRoute
@@ -115,6 +124,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/analyzer': typeof AuthenticatedAnalyzerRoute
+  '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
   '/_authenticated/problems': typeof AuthenticatedProblemsRoute
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/analyzer'
+    | '/announcements'
     | '/dashboard'
     | '/my-team'
     | '/problems'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analyzer'
+    | '/announcements'
     | '/dashboard'
     | '/my-team'
     | '/problems'
@@ -156,6 +168,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_authenticated/admin'
     | '/_authenticated/analyzer'
+    | '/_authenticated/announcements'
     | '/_authenticated/dashboard'
     | '/_authenticated/my-team'
     | '/_authenticated/problems'
@@ -199,6 +212,13 @@ declare module '@tanstack/react-router' {
       path: '/analyzer'
       fullPath: '/analyzer'
       preLoaderRoute: typeof AuthenticatedAnalyzerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/announcements': {
+      id: '/_authenticated/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -277,6 +297,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAnalyzerRoute: typeof AuthenticatedAnalyzerRoute
+  AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
   AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
@@ -289,6 +310,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAnalyzerRoute: AuthenticatedAnalyzerRoute,
+  AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
   AuthenticatedProblemsRoute: AuthenticatedProblemsRoute,
@@ -308,13 +330,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
