@@ -24,6 +24,7 @@ import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_auth
 import { Route as AuthenticatedRepositoryRouteImport } from './routes/_authenticated/repository'
 import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedShortlistRouteImport } from './routes/_authenticated/shortlist'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
 import { Route as AuthenticatedSubmissionsRouteImport } from './routes/_authenticated/submissions'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
@@ -106,6 +107,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedShortlistRoute = AuthenticatedShortlistRouteImport.update({
+  id: '/shortlist',
+  path: '/shortlist',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSimilarityRoute = AuthenticatedSimilarityRouteImport.update({
   id: '/similarity',
   path: '/similarity',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/repository': typeof AuthenticatedRepositoryRoute
   '/results': typeof AuthenticatedResultsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shortlist': typeof AuthenticatedShortlistRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/repository': typeof AuthenticatedRepositoryRoute
   '/results': typeof AuthenticatedResultsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shortlist': typeof AuthenticatedShortlistRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/_authenticated/repository': typeof AuthenticatedRepositoryRoute
   '/_authenticated/results': typeof AuthenticatedResultsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/shortlist': typeof AuthenticatedShortlistRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
   '/_authenticated/submissions': typeof AuthenticatedSubmissionsRoute
   '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/repository'
     | '/results'
     | '/settings'
+    | '/shortlist'
     | '/similarity'
     | '/submissions'
     | '/team-registration'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/repository'
     | '/results'
     | '/settings'
+    | '/shortlist'
     | '/similarity'
     | '/submissions'
     | '/team-registration'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/_authenticated/repository'
     | '/_authenticated/results'
     | '/_authenticated/settings'
+    | '/_authenticated/shortlist'
     | '/_authenticated/similarity'
     | '/_authenticated/submissions'
     | '/_authenticated/team-registration'
@@ -365,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/shortlist': {
+      id: '/_authenticated/shortlist'
+      path: '/shortlist'
+      fullPath: '/shortlist'
+      preLoaderRoute: typeof AuthenticatedShortlistRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/similarity': {
       id: '/_authenticated/similarity'
       path: '/similarity'
@@ -424,6 +443,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRepositoryRoute: typeof AuthenticatedRepositoryRoute
   AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedShortlistRoute: typeof AuthenticatedShortlistRoute
   AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
   AuthenticatedSubmissionsRoute: typeof AuthenticatedSubmissionsRoute
   AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
@@ -443,6 +463,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRepositoryRoute: AuthenticatedRepositoryRoute,
   AuthenticatedResultsRoute: AuthenticatedResultsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedShortlistRoute: AuthenticatedShortlistRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
   AuthenticatedSubmissionsRoute: AuthenticatedSubmissionsRoute,
   AuthenticatedTeamRegistrationRoute: AuthenticatedTeamRegistrationRoute,
