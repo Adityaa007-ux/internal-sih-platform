@@ -18,6 +18,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDeadlinesRouteImport } from './routes/_authenticated/deadlines'
 import { Route as AuthenticatedFacultyReviewRouteImport } from './routes/_authenticated/faculty-review'
 import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated/my-team'
+import { Route as AuthenticatedPresentationRouteImport } from './routes/_authenticated/presentation'
 import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticated/problems'
 import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticated/proposal'
 import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
@@ -76,6 +77,12 @@ const AuthenticatedMyTeamRoute = AuthenticatedMyTeamRouteImport.update({
   path: '/my-team',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPresentationRoute =
+  AuthenticatedPresentationRouteImport.update({
+    id: '/presentation',
+    path: '/presentation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProblemsRoute = AuthenticatedProblemsRouteImport.update({
   id: '/problems',
   path: '/problems',
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/deadlines': typeof AuthenticatedDeadlinesRoute
   '/faculty-review': typeof AuthenticatedFacultyReviewRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
+  '/presentation': typeof AuthenticatedPresentationRoute
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/deadlines': typeof AuthenticatedDeadlinesRoute
   '/faculty-review': typeof AuthenticatedFacultyReviewRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
+  '/presentation': typeof AuthenticatedPresentationRoute
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
@@ -187,6 +196,7 @@ export interface FileRoutesById {
   '/_authenticated/deadlines': typeof AuthenticatedDeadlinesRoute
   '/_authenticated/faculty-review': typeof AuthenticatedFacultyReviewRoute
   '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
+  '/_authenticated/presentation': typeof AuthenticatedPresentationRoute
   '/_authenticated/problems': typeof AuthenticatedProblemsRoute
   '/_authenticated/proposal': typeof AuthenticatedProposalRoute
   '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/deadlines'
     | '/faculty-review'
     | '/my-team'
+    | '/presentation'
     | '/problems'
     | '/proposal'
     | '/recommendations'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/deadlines'
     | '/faculty-review'
     | '/my-team'
+    | '/presentation'
     | '/problems'
     | '/proposal'
     | '/recommendations'
@@ -252,6 +264,7 @@ export interface FileRouteTypes {
     | '/_authenticated/deadlines'
     | '/_authenticated/faculty-review'
     | '/_authenticated/my-team'
+    | '/_authenticated/presentation'
     | '/_authenticated/problems'
     | '/_authenticated/proposal'
     | '/_authenticated/recommendations'
@@ -333,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/my-team'
       fullPath: '/my-team'
       preLoaderRoute: typeof AuthenticatedMyTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/presentation': {
+      id: '/_authenticated/presentation'
+      path: '/presentation'
+      fullPath: '/presentation'
+      preLoaderRoute: typeof AuthenticatedPresentationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/problems': {
@@ -437,6 +457,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDeadlinesRoute: typeof AuthenticatedDeadlinesRoute
   AuthenticatedFacultyReviewRoute: typeof AuthenticatedFacultyReviewRoute
   AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
+  AuthenticatedPresentationRoute: typeof AuthenticatedPresentationRoute
   AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
   AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
   AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
@@ -457,6 +478,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDeadlinesRoute: AuthenticatedDeadlinesRoute,
   AuthenticatedFacultyReviewRoute: AuthenticatedFacultyReviewRoute,
   AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
+  AuthenticatedPresentationRoute: AuthenticatedPresentationRoute,
   AuthenticatedProblemsRoute: AuthenticatedProblemsRoute,
   AuthenticatedProposalRoute: AuthenticatedProposalRoute,
   AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
