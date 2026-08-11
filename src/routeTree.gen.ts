@@ -20,6 +20,7 @@ import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticated/problems'
 import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticated/proposal'
 import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
+import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -80,6 +81,11 @@ const AuthenticatedRecommendationsRoute =
     path: '/recommendations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedResultsRoute = AuthenticatedResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSimilarityRoute = AuthenticatedSimilarityRouteImport.update({
   id: '/similarity',
   path: '/similarity',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/results': typeof AuthenticatedResultsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/results': typeof AuthenticatedResultsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/_authenticated/problems': typeof AuthenticatedProblemsRoute
   '/_authenticated/proposal': typeof AuthenticatedProposalRoute
   '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/_authenticated/results': typeof AuthenticatedResultsRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
   '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/problems'
     | '/proposal'
     | '/recommendations'
+    | '/results'
     | '/similarity'
     | '/team-registration'
     | '/admin/'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/problems'
     | '/proposal'
     | '/recommendations'
+    | '/results'
     | '/similarity'
     | '/team-registration'
     | '/admin'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/_authenticated/problems'
     | '/_authenticated/proposal'
     | '/_authenticated/recommendations'
+    | '/_authenticated/results'
     | '/_authenticated/similarity'
     | '/_authenticated/team-registration'
     | '/_authenticated/admin/'
@@ -275,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecommendationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/results': {
+      id: '/_authenticated/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof AuthenticatedResultsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/similarity': {
       id: '/_authenticated/similarity'
       path: '/similarity'
@@ -323,6 +342,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
   AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
   AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
+  AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
   AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
   AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
 }
@@ -337,6 +357,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProblemsRoute: AuthenticatedProblemsRoute,
   AuthenticatedProposalRoute: AuthenticatedProposalRoute,
   AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
+  AuthenticatedResultsRoute: AuthenticatedResultsRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
   AuthenticatedTeamRegistrationRoute: AuthenticatedTeamRegistrationRoute,
 }
