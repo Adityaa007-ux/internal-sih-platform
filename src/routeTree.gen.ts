@@ -31,6 +31,7 @@ import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSubmissionsRouteImport } from './routes/_authenticated/submissions'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -147,6 +148,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminStudentsRoute =
+  AuthenticatedAdminStudentsRouteImport.update({
+    id: '/students',
+    path: '/students',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -191,6 +199,7 @@ export interface FileRoutesByTo {
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/submissions': typeof AuthenticatedSubmissionsRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -216,6 +225,7 @@ export interface FileRoutesById {
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
   '/_authenticated/submissions': typeof AuthenticatedSubmissionsRoute
   '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
+  '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/similarity'
     | '/submissions'
     | '/team-registration'
+    | '/admin/students'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/similarity'
     | '/submissions'
     | '/team-registration'
+    | '/admin/students'
     | '/admin'
   id:
     | '__root__'
@@ -287,6 +299,7 @@ export interface FileRouteTypes {
     | '/_authenticated/similarity'
     | '/_authenticated/submissions'
     | '/_authenticated/team-registration'
+    | '/_authenticated/admin/students'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -451,15 +464,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/students': {
+      id: '/_authenticated/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AuthenticatedAdminStudentsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminStudentsRoute: typeof AuthenticatedAdminStudentsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminStudentsRoute: AuthenticatedAdminStudentsRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
 

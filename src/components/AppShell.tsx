@@ -4,6 +4,7 @@ import {
   Bell,
   Bot,
   Building2,
+  Database,
   CalendarClock,
   CheckCircle2,
   ClipboardList,
@@ -29,6 +30,7 @@ import { DEMO_USERS, PROBLEMS, type Role } from "@/lib/demo-data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AiAssistant } from "@/components/AiAssistant";
+import { signOutEverywhere } from "@/hooks/useSession";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +61,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { to: "/team-registration", label: "Team Registration", icon: UserPlus, roles: ["student", "admin"] },
       { to: "/my-team", label: "My Team", icon: Users, roles: ["student", "mentor", "admin"] },
       { to: "/problems", label: "Problem Explorer", icon: FileSearch, roles: ["student", "faculty", "mentor", "admin"] },
+      { to: "/repository", label: "SIH 2025 Repository", icon: Database, roles: ["student", "faculty", "mentor", "admin"] },
       { to: "/proposal", label: "Proposal Submission", icon: FileText, roles: ["student"] },
     ],
   },
@@ -85,6 +88,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { to: "/analytics", label: "Analytics", icon: BarChart3, roles: ["faculty", "admin", "mentor"] },
       { to: "/announcements", label: "Announcements", icon: Megaphone, roles: ["student", "faculty", "mentor", "admin"] },
+      { to: "/deadlines", label: "Deadlines", icon: CalendarClock, roles: ["student", "faculty", "mentor", "admin"] },
       { to: "/settings", label: "Settings", icon: Settings, roles: ["student", "faculty", "mentor", "admin"] },
     ],
   },
@@ -373,6 +377,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <DropdownMenuItem asChild>
                     <Link to="/announcements">Notification centre</Link>
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => void signOutEverywhere()}>Sign out</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
