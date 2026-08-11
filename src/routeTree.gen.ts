@@ -21,6 +21,7 @@ import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticated/proposal'
 import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
 import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
 import { Route as AuthenticatedTeamRegistrationRouteImport } from './routes/_authenticated/team-registration'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -86,6 +87,11 @@ const AuthenticatedResultsRoute = AuthenticatedResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSimilarityRoute = AuthenticatedSimilarityRouteImport.update({
   id: '/similarity',
   path: '/similarity',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
   '/results': typeof AuthenticatedResultsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
   '/results': typeof AuthenticatedResultsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
   '/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/_authenticated/proposal': typeof AuthenticatedProposalRoute
   '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
   '/_authenticated/results': typeof AuthenticatedResultsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
   '/_authenticated/team-registration': typeof AuthenticatedTeamRegistrationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/recommendations'
     | '/results'
+    | '/settings'
     | '/similarity'
     | '/team-registration'
     | '/admin/'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/proposal'
     | '/recommendations'
     | '/results'
+    | '/settings'
     | '/similarity'
     | '/team-registration'
     | '/admin'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposal'
     | '/_authenticated/recommendations'
     | '/_authenticated/results'
+    | '/_authenticated/settings'
     | '/_authenticated/similarity'
     | '/_authenticated/team-registration'
     | '/_authenticated/admin/'
@@ -294,6 +306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedResultsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/similarity': {
       id: '/_authenticated/similarity'
       path: '/similarity'
@@ -343,6 +362,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
   AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
   AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
   AuthenticatedTeamRegistrationRoute: typeof AuthenticatedTeamRegistrationRoute
 }
@@ -358,6 +378,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProposalRoute: AuthenticatedProposalRoute,
   AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
   AuthenticatedResultsRoute: AuthenticatedResultsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
   AuthenticatedTeamRegistrationRoute: AuthenticatedTeamRegistrationRoute,
 }
