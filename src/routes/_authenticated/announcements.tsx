@@ -36,7 +36,7 @@ function AnnouncementsPage() {
 
   const rows: Row[] =
     (data as Row[] | undefined)?.filter((a) => a.title) ??
-    announcements.map((a) => ({ id: a.id, title: a.title, body: a.body, tag: a.tag ?? "General", created_at: a.date }));
+    announcements.map((a) => ({ id: a.id, title: a.title, body: a.body, tag: a.type, created_at: a.date }));
 
   return (
     <div className="space-y-6">
