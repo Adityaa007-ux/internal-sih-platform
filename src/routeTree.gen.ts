@@ -20,6 +20,7 @@ import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticated/problems'
 import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticated/proposal'
 import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
+import { Route as AuthenticatedRepositoryRouteImport } from './routes/_authenticated/repository'
 import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
@@ -82,6 +83,11 @@ const AuthenticatedRecommendationsRoute =
     path: '/recommendations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRepositoryRoute = AuthenticatedRepositoryRouteImport.update({
+  id: '/repository',
+  path: '/repository',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedResultsRoute = AuthenticatedResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/repository': typeof AuthenticatedRepositoryRoute
   '/results': typeof AuthenticatedResultsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/problems': typeof AuthenticatedProblemsRoute
   '/proposal': typeof AuthenticatedProposalRoute
   '/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/repository': typeof AuthenticatedRepositoryRoute
   '/results': typeof AuthenticatedResultsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/_authenticated/problems': typeof AuthenticatedProblemsRoute
   '/_authenticated/proposal': typeof AuthenticatedProposalRoute
   '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
+  '/_authenticated/repository': typeof AuthenticatedRepositoryRoute
   '/_authenticated/results': typeof AuthenticatedResultsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/problems'
     | '/proposal'
     | '/recommendations'
+    | '/repository'
     | '/results'
     | '/settings'
     | '/similarity'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/problems'
     | '/proposal'
     | '/recommendations'
+    | '/repository'
     | '/results'
     | '/settings'
     | '/similarity'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/_authenticated/problems'
     | '/_authenticated/proposal'
     | '/_authenticated/recommendations'
+    | '/_authenticated/repository'
     | '/_authenticated/results'
     | '/_authenticated/settings'
     | '/_authenticated/similarity'
@@ -299,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecommendationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/repository': {
+      id: '/_authenticated/repository'
+      path: '/repository'
+      fullPath: '/repository'
+      preLoaderRoute: typeof AuthenticatedRepositoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/results': {
       id: '/_authenticated/results'
       path: '/results'
@@ -361,6 +380,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
   AuthenticatedProposalRoute: typeof AuthenticatedProposalRoute
   AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
+  AuthenticatedRepositoryRoute: typeof AuthenticatedRepositoryRoute
   AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
@@ -377,6 +397,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProblemsRoute: AuthenticatedProblemsRoute,
   AuthenticatedProposalRoute: AuthenticatedProposalRoute,
   AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
+  AuthenticatedRepositoryRoute: AuthenticatedRepositoryRoute,
   AuthenticatedResultsRoute: AuthenticatedResultsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
