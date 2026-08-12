@@ -160,11 +160,15 @@ export type Database = {
           consumed: boolean
           contact: string
           created_at: string
+          email: string | null
           expires_at: string
           full_name: string | null
           id: string
+          mobile: string | null
           prn: string | null
           purpose: string
+          role: string | null
+          verified_at: string | null
         }
         Insert: {
           attempts?: number
@@ -173,11 +177,15 @@ export type Database = {
           consumed?: boolean
           contact: string
           created_at?: string
+          email?: string | null
           expires_at: string
           full_name?: string | null
           id?: string
+          mobile?: string | null
           prn?: string | null
           purpose?: string
+          role?: string | null
+          verified_at?: string | null
         }
         Update: {
           attempts?: number
@@ -186,16 +194,22 @@ export type Database = {
           consumed?: boolean
           contact?: string
           created_at?: string
+          email?: string | null
           expires_at?: string
           full_name?: string | null
           id?: string
+          mobile?: string | null
           prn?: string | null
           purpose?: string
+          role?: string | null
+          verified_at?: string | null
         }
         Relationships: []
       }
       profiles: {
         Row: {
+          approval_status: string
+          auth_email: string | null
           campus: string | null
           created_at: string
           department: string | null
@@ -203,12 +217,14 @@ export type Database = {
           full_name: string
           id: string
           mobile: string | null
-          prn: string
+          prn: string | null
           status: string
           updated_at: string
           verified_channel: string
         }
         Insert: {
+          approval_status?: string
+          auth_email?: string | null
           campus?: string | null
           created_at?: string
           department?: string | null
@@ -216,12 +232,14 @@ export type Database = {
           full_name?: string
           id: string
           mobile?: string | null
-          prn: string
+          prn?: string | null
           status?: string
           updated_at?: string
           verified_channel?: string
         }
         Update: {
+          approval_status?: string
+          auth_email?: string | null
           campus?: string | null
           created_at?: string
           department?: string | null
@@ -229,7 +247,7 @@ export type Database = {
           full_name?: string
           id?: string
           mobile?: string | null
-          prn?: string
+          prn?: string | null
           status?: string
           updated_at?: string
           verified_channel?: string
@@ -272,6 +290,86 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          created_at: string
+          is_leader: boolean
+          member_name: string
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          is_leader?: boolean
+          member_name?: string
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          is_leader?: boolean
+          member_name?: string
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          campus: string | null
+          code: string
+          created_at: string
+          department: string | null
+          id: string
+          leader_id: string
+          name: string
+          selected_at: string | null
+          selected_by: string | null
+          selected_ps_id: string | null
+          selected_ps_org: string | null
+          selected_ps_title: string | null
+          updated_at: string
+        }
+        Insert: {
+          campus?: string | null
+          code: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          leader_id: string
+          name: string
+          selected_at?: string | null
+          selected_by?: string | null
+          selected_ps_id?: string | null
+          selected_ps_org?: string | null
+          selected_ps_title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          campus?: string | null
+          code?: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          leader_id?: string
+          name?: string
+          selected_at?: string | null
+          selected_by?: string | null
+          selected_ps_id?: string | null
+          selected_ps_org?: string | null
+          selected_ps_title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -305,9 +403,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
+      is_team_member: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      app_role: "student" | "admin"
+      app_role: "student" | "admin" | "faculty" | "mentor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -435,7 +538,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["student", "admin"],
+      app_role: ["student", "admin", "faculty", "mentor"],
     },
   },
 } as const

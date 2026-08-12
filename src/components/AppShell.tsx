@@ -30,7 +30,7 @@ import { DEMO_USERS, PROBLEMS, type Role } from "@/lib/demo-data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AiAssistant } from "@/components/AiAssistant";
-import { signOutEverywhere } from "@/hooks/useSession";
+import { signOutEverywhere, useSession } from "@/hooks/useSession";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -146,13 +146,21 @@ function useGlobalSearch(query: string) {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { role, setRole, notifications, markAllRead, currentTeam, resultsPublished } = useStore();
+  const { role: storeRole, setRole, notifications, markAllRead, currentTeam, resultsPublished } = useStore();
+  const session = useSession();
+  const role = (session.role ?? storeRole) as Role;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const results = useGlobalSearch(query);
-  const user = DEMO_USERS[role];
+  const demoUser = DEMO_USERS[role];
+  const user = {
+    ...demoUser,
+    name: session.name || demoUser.name,
+    initials: session.name ? session.initials : demoUser.initials,
+    email: session.email || demoUser.email,
+  };
   const unread = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
@@ -291,25 +299,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
 
             <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-1.5">
-                    <Building2 className="size-3.5" />
-                    <span className="hidden sm:inline">{ROLE_LABEL[role]}</span>
-                    <span className="sm:hidden">{ROLE_LABEL[role].slice(0, 3)}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Demo role switcher</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {(Object.keys(ROLE_LABEL) as Role[]).map((r) => (
-                    <DropdownMenuItem key={r} onClick={() => setRole(r)} className="flex-col items-start gap-0.5">
-                      <span className={cn("text-sm font-medium", r === role && "text-primary")}>{ROLE_LABEL[r]}</span>
-                      <span className="text-[11px] text-muted-foreground">{DEMO_USERS[r].name}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold">
+                <Building2 className="size-3.5 text-muted-foreground" />
+                <span className="hidden sm:inline">{ROLE_LABEL[role]}</span>
+                <span className="sm:hidden">{ROLE_LABEL[role].slice(0, 3)}</span>
+              </span>
 
               <Popover>
                 <PopoverTrigger asChild>

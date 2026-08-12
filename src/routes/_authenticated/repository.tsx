@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Database, Search, X } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { CheckCircle2, Database, Loader2, Search, X } from "lucide-react";
+import { useSession } from "@/hooks/useSession";
+import { clearTeamProblem, getMyTeam, selectTeamProblem, type MyTeamResult } from "@/lib/team.functions";
 import {
   PS_CATEGORIES,
   PS_DATASET_LABEL,
@@ -32,6 +37,40 @@ export const Route = createFileRoute("/_authenticated/repository")({
 });
 
 function RepositoryPage() {
+  const { role, isSignedIn } = useSession();
+  const isStudent = role === "student";
+  const queryClient = useQueryClient();
+  const fetchMyTeam = useServerFn(getMyTeam);
+  const selectFn = useServerFn(selectTeamProblem);
+  const clearFn = useServerFn(clearTeamProblem);
+
+  const myTeam = useQuery<MyTeamResult>({
+    queryKey: ["my-team"],
+    queryFn: () => fetchMyTeam(),
+    enabled: isSignedIn && isStudent,
+  });
+  const selected = myTeam.data?.team ?? null;
+
+  const selectMutation = useMutation({
+    mutationFn: (r: PsRecord) =>
+      selectFn({ data: { psId: r.psId, psTitle: r.teamName ? `${r.psId} — ${r.organization}` : r.psId, psOrg: r.organization } }),
+    onSuccess: () => {
+      toast.success("Problem statement selected. Your choice is saved and will persist after refresh.");
+      void queryClient.invalidateQueries({ queryKey: ["my-team"] });
+      setActive(null);
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save your selection."),
+  });
+
+  const clearMutation = useMutation({
+    mutationFn: () => clearFn(),
+    onSuccess: () => {
+      toast.success("Selection cleared. You can now choose a different problem statement.");
+      void queryClient.invalidateQueries({ queryKey: ["my-team"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not clear your selection."),
+  });
+
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [organization, setOrganization] = useState("");
@@ -63,6 +102,28 @@ function RepositoryPage() {
         description={`${PS_DATASET_LABEL}. Separate from the curated problem bank used by the AI modules.`}
         icon={Database}
       />
+
+      {isStudent && selected?.selected_ps_id ? (
+        <div className="surface-card flex flex-wrap items-center gap-3 border-success/40 bg-success-soft p-4">
+          <CheckCircle2 className="size-5 text-success" />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold">
+              Your team has selected {selected.selected_ps_id}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">{selected.selected_ps_org ?? selected.selected_ps_title}</p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="ml-auto"
+            disabled={clearMutation.isPending || !myTeam.data?.isLeader}
+            onClick={() => clearMutation.mutate()}
+          >
+            {clearMutation.isPending ? <Loader2 className="size-3.5 animate-spin" /> : null}
+            Change selection
+          </Button>
+        </div>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total records" value={PS_RECORDS.length} icon={Database} />
@@ -177,9 +238,21 @@ function RepositoryPage() {
                     <td className="px-4 py-3 font-medium">{r.teamName}</td>
                     <td className="px-4 py-3 text-muted-foreground">{r.teamLead}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button size="sm" variant="outline" onClick={() => setActive(r)}>
-                        Details
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="outline" onClick={() => setActive(r)}>
+                          Details
+                        </Button>
+                        {isStudent ? (
+                          <Button
+                            size="sm"
+                            variant={selected?.selected_ps_id === r.psId ? "secondary" : "default"}
+                            disabled={selectMutation.isPending || selected?.selected_ps_id === r.psId}
+                            onClick={() => selectMutation.mutate(r)}
+                          >
+                            {selected?.selected_ps_id === r.psId ? "Selected" : "Select"}
+                          </Button>
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -220,6 +293,16 @@ function RepositoryPage() {
                 </div>
               ))}
             </dl>
+            {isStudent ? (
+              <Button
+                className="mt-5 w-full"
+                disabled={selectMutation.isPending || selected?.selected_ps_id === active.psId}
+                onClick={() => selectMutation.mutate(active)}
+              >
+                {selectMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
+                {selected?.selected_ps_id === active.psId ? "Already selected by your team" : `Select ${active.psId} for my team`}
+              </Button>
+            ) : null}
             <p className="mt-5 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">{PS_DATASET_NOTE}</p>
           </div>
         </div>
