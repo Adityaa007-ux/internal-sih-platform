@@ -123,7 +123,7 @@ export const selectTeamProblem = createServerFn({ method: "POST" })
 
     await supabase.from("audit_log").insert({
       actor: userId,
-      actor_label: profile?.full_name ?? undefined,
+      actor_label: profile?.full_name || "",
       action: "team.problem_selected",
       detail: `${data.psId} — ${data.psTitle.slice(0, 120)}`,
     });
