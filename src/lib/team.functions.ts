@@ -82,6 +82,7 @@ export const selectTeamProblem = createServerFn({ method: "POST" })
       .eq("id", userId)
       .maybeSingle();
 
+    const { getMyTeamFor } = await import("./team.server");
     const existing = await getMyTeamFor(supabase, userId);
     let teamId = existing?.id ?? null;
 
@@ -122,7 +123,7 @@ export const selectTeamProblem = createServerFn({ method: "POST" })
 
     await supabase.from("audit_log").insert({
       actor: userId,
-      actor_label: profile?.full_name ?? null,
+      actor_label: profile?.full_name ?? undefined,
       action: "team.problem_selected",
       detail: `${data.psId} — ${data.psTitle.slice(0, 120)}`,
     });
@@ -135,6 +136,7 @@ export const clearTeamProblem = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
+    const { getMyTeamFor } = await import("./team.server");
     const team = await getMyTeamFor(supabase, userId);
     if (!team) throw new Error("No team found.");
     if (team.leader_id !== userId) throw new Error("Only the team leader can change the selected problem statement.");
@@ -189,19 +191,3 @@ export const listTeamSelections = createServerFn({ method: "GET" })
     }));
   });
 
-/* helper — shared, server-side only */
-async function getMyTeamFor(supabase: any, userId: string) {
-  const { data: membership } = await supabase
-    .from("team_members")
-    .select("team_id")
-    .eq("user_id", userId)
-    .limit(1)
-    .maybeSingle();
-  const id =
-    membership?.team_id ??
-    (await supabase.from("teams").select("id").eq("leader_id", userId).limit(1).maybeSingle()).data?.id ??
-    null;
-  if (!id) return null;
-  const { data } = await supabase.from("teams").select("*").eq("id", id).maybeSingle();
-  return data as TeamRecord | null;
-}
