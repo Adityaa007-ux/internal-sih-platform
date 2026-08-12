@@ -111,10 +111,10 @@ function AuthPage() {
 
   async function requestOtp() {
     if (busy) return;
-    if (fullName.trim().length < 3) return toast.error("Enter your full name.");
+    if (fullName.trim().length < 3) { toast.error("Enter your full name."); return; }
     if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email.trim()))
-      return toast.error("Enter a valid email address (for example name@gmail.com).");
-    if (!/^\d{10}$/.test(mobile.trim())) return toast.error("Mobile number must be exactly 10 digits.");
+      { toast.error("Enter a valid email address (for example name@gmail.com)."); return; }
+    if (!/^\d{10}$/.test(mobile.trim())) { toast.error("Mobile number must be exactly 10 digits."); return; }
 
     setBusy(true);
     try {
@@ -149,7 +149,7 @@ function AuthPage() {
 
   async function createAccount() {
     if (busy || !challenge) return;
-    if (password !== confirmPassword) return toast.error("Passwords do not match.");
+    if (password !== confirmPassword) { toast.error("Passwords do not match."); return; }
     setBusy(true);
     try {
       const res = await finishSignup({ data: { challengeId: challenge.challengeId, password, confirmPassword } });
@@ -170,8 +170,8 @@ function AuthPage() {
 
   async function doLogin() {
     if (busy) return;
-    if (!identifier.trim()) return toast.error("Enter your registered email or mobile number.");
-    if (!loginPassword) return toast.error("Enter your password.");
+    if (!identifier.trim()) { toast.error("Enter your registered email or mobile number."); return; }
+    if (!loginPassword) { toast.error("Enter your password."); return; }
     setBusy(true);
     try {
       const res = await login({ data: { role, identifier, password: loginPassword } });
