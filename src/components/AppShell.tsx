@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  BadgeCheck,
   BarChart3,
   Bell,
   Bot,
