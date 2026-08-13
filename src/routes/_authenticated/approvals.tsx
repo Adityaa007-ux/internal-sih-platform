@@ -81,7 +81,7 @@ function ApprovalsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Account approvals"
-        subtitle="Mentor and administrator sign-ups stay pending until faculty or an administrator approves them."
+        description="Mentor and administrator sign-ups stay pending until faculty or an administrator approves them."
         icon={BadgeCheck}
       />
 
@@ -91,7 +91,7 @@ function ApprovalsPage() {
           <p className="mt-3 text-sm text-muted-foreground">Loading…</p>
         ) : !pending.data?.length ? (
           <div className="mt-3">
-            <EmptyState title="Nothing pending" description="Every mentor and administrator account has been reviewed." />
+            <EmptyState icon={BadgeCheck} title="Nothing pending" description="Every mentor and administrator account has been reviewed." />
           </div>
         ) : (
           <div className="mt-3 overflow-x-auto">
@@ -145,7 +145,7 @@ function ApprovalsPage() {
           <p className="mt-3 text-sm text-muted-foreground">Loading…</p>
         ) : !selections.data?.length ? (
           <div className="mt-3">
-            <EmptyState title="No teams yet" description="Team selections from the SIH 2025 repository will appear here." />
+            <EmptyState icon={BadgeCheck} title="No teams yet" description="Team selections from the SIH 2025 repository will appear here." />
           </div>
         ) : (
           <ul className="mt-3 space-y-2">
