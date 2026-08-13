@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  BadgeCheck,
   BarChart3,
   Bell,
   Bot,
@@ -17,6 +18,7 @@ import {
   Menu,
   Search,
   Settings,
+  ShieldCheck,
   Sparkles,
   Trophy,
   UserPlus,
@@ -81,6 +83,14 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { to: "/shortlist", label: "Shortlist", icon: ListChecks, roles: ["faculty", "admin", "student"] },
       { to: "/presentation", label: "Presentation", icon: CalendarClock, roles: ["faculty", "admin", "student"] },
       { to: "/results", label: "Results", icon: Trophy, roles: ["student", "faculty", "mentor", "admin"] },
+    ],
+  },
+  {
+    group: "Admin Portal",
+    items: [
+      { to: "/approvals", label: "Account Approvals", icon: BadgeCheck, roles: ["faculty", "admin"] },
+      { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck, roles: ["admin"] },
+      { to: "/admin/students", label: "Manage Students", icon: Users, roles: ["admin"] },
     ],
   },
   {

@@ -275,3 +275,84 @@ export const listAudit = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
+/* ---------------- staff: approvals & team selections ---------------- */
+
+/** Admin OR faculty may approve pending mentor/admin accounts. */
+async function assertStaff(context: { supabase: any; userId: string }) {
+  const [admin, faculty] = await Promise.all([
+    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
+    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "faculty" }),
+  ]);
+  if (!admin.data && !faculty.data) throw new Error("Forbidden: faculty or admin access required.");
+}
+
+export interface PendingAccount {
+  id: string;
+  full_name: string;
+  email: string | null;
+  mobile: string | null;
+  approval_status: string;
+  created_at: string;
+  role: string;
+}
+
+export const listPendingApprovals = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PendingAccount[]> => {
+    await assertStaff(context);
+    const { data, error } = await context.supabase
+      .from("profiles")
+      .select("id, full_name, email, mobile, approval_status, created_at")
+      .neq("approval_status", "approved")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    const rows = data ?? [];
+    if (!rows.length) return [];
+    const { data: roles } = await context.supabase
+      .from("user_roles")
+      .select("user_id, role")
+      .in("user_id", rows.map((r: any) => r.id));
+    const byUser = new Map((roles ?? []).map((r: any) => [r.user_id, r.role]));
+    return rows.map((r: any) => ({ ...r, role: (byUser.get(r.id) as string) ?? "student" }));
+  });
+
+export const setApprovalStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ id: z.string().uuid(), status: z.enum(["approved", "rejected", "pending"]) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertStaff(context);
+    const { error } = await context.supabase
+      .from("profiles")
+      .update({ approval_status: data.status })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await audit(context, "account.approval", `${data.id} → ${data.status}`);
+    return { ok: true };
+  });
+
+export interface TeamSelectionRow {
+  id: string;
+  name: string;
+  code: string;
+  campus: string | null;
+  department: string | null;
+  selected_ps_id: string | null;
+  selected_ps_title: string | null;
+  selected_ps_org: string | null;
+  selected_at: string | null;
+}
+
+export const listTeamSelections = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<TeamSelectionRow[]> => {
+    await assertStaff(context);
+    const { data, error } = await context.supabase
+      .from("teams")
+      .select("id, name, code, campus, department, selected_ps_id, selected_ps_title, selected_ps_org, selected_at")
+      .order("selected_at", { ascending: false, nullsFirst: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as TeamSelectionRow[];
+  });
