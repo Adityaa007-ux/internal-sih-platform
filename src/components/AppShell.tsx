@@ -84,6 +84,14 @@ const NAV: { group: string; items: NavItem[] }[] = [
     ],
   },
   {
+    group: "Admin Portal",
+    items: [
+      { to: "/approvals", label: "Account Approvals", icon: BadgeCheck, roles: ["faculty", "admin"] },
+      { to: "/admin", label: "Admin Dashboard", icon: ShieldCheck, roles: ["admin"] },
+      { to: "/admin/students", label: "Manage Students", icon: Users, roles: ["admin"] },
+    ],
+  },
+  {
     group: "Institution",
     items: [
       { to: "/analytics", label: "Analytics", icon: BarChart3, roles: ["faculty", "admin", "mentor"] },
