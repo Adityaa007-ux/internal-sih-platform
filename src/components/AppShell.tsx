@@ -18,6 +18,7 @@ import {
   Menu,
   Search,
   Settings,
+  ShieldCheck,
   Sparkles,
   Trophy,
   UserPlus,
