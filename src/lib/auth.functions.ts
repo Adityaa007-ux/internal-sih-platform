@@ -401,27 +401,23 @@ const demoLoginSchema = z.object({
   password: z.string().max(200).optional(),
 });
 
-const DEMO_PASSWORD = "JGI-SIH-demo-2026!";
-
-function demoSlug(value: string): string {
-  const base = value.trim().toLowerCase().split("@")[0] ?? "guest";
-  const slug = base.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  return slug || "guest";
-}
-
-function titleCase(slug: string): string {
-  return slug
-    .split(/[-_.]+/)
-    .filter(Boolean)
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-    .join(" ");
-}
-
 export const demoLogin = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => demoLoginSchema.parse(data))
   .handler(async ({ data }): Promise<LoginResult> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { createClient } = await import("@supabase/supabase-js");
+
+    const DEMO_PASSWORD = "JGI-SIH-demo-2026!";
+    const demoSlug = (value: string): string => {
+      const base = value.trim().toLowerCase().split("@")[0] ?? "guest";
+      return base.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "guest";
+    };
+    const titleCase = (value: string): string =>
+      value
+        .split(/[-_.]+/)
+        .filter(Boolean)
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(" ");
 
     const raw = data.identifier.trim();
     const slug = demoSlug(raw);
