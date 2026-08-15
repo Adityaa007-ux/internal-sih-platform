@@ -174,6 +174,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const unread = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
+    if (session.role && session.role !== storeRole) setRole(session.role as Role);
+  }, [session.role, storeRole, setRole]);
+
+  useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
   }, [pathname]);
