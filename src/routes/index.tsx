@@ -2,8 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import {
-  ArrowLeft,
-  BadgeCheck,
   Bot,
   BrainCircuit,
   GraduationCap,
@@ -17,14 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  completeSignup,
-  loginWithPassword,
-  startSignupOtp,
-  verifySignupOtp,
-  type PortalRole,
-  type StartOtpResult,
-} from "@/lib/auth.functions";
+import { demoLogin, type PortalRole } from "@/lib/auth.functions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
