@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useStore, combinedScore } from "@/lib/store";
 import { DEADLINES, DEMO_USERS, problemById } from "@/lib/demo-data";
+import { useSession } from "@/hooks/useSession";
 import { DemoBadge, EmptyState, PageHeader, StagePipeline, StatCard, StatusPill } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { role } = useStore();
+  const { role } = useSession();
   if (role === "student") return <StudentDashboard />;
   if (role === "faculty") return <FacultyDashboard />;
   if (role === "mentor") return <MentorDashboard />;
@@ -118,7 +119,8 @@ function AnnouncementList({ limit = 4 }: { limit?: number }) {
 
 function StudentDashboard() {
   const { currentTeam } = useStore();
-  const user = DEMO_USERS.student;
+  const session = useSession();
+  const user = { ...DEMO_USERS.student, name: session.name || DEMO_USERS.student.name };
 
   if (!currentTeam) {
     return (

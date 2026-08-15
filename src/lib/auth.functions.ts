@@ -389,3 +389,110 @@ export const updateMyProfile = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/* ------------------------------------------------------------------ */
+/* Demo login — presentation mode                                       */
+/* Any email / mobile + any password signs in as the selected role.     */
+/* ------------------------------------------------------------------ */
+
+const demoLoginSchema = z.object({
+  role: z.enum(ROLES),
+  identifier: z.string().trim().min(1).max(160),
+  password: z.string().max(200).optional(),
+});
+
+export const demoLogin = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => demoLoginSchema.parse(data))
+  .handler(async ({ data }): Promise<LoginResult> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { createClient } = await import("@supabase/supabase-js");
+
+    const DEMO_PASSWORD = "JGI-SIH-demo-2026!";
+    const demoSlug = (value: string): string => {
+      const base = value.trim().toLowerCase().split("@")[0] ?? "guest";
+      return base.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "guest";
+    };
+    const titleCase = (value: string): string =>
+      value
+        .split(/[-_.]+/)
+        .filter(Boolean)
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(" ");
+
+    const raw = data.identifier.trim();
+    const slug = demoSlug(raw);
+    const authEmail = `${data.role}.${slug}@jgi-sih.demo`;
+    const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(raw);
+    const isMobile = /^\d{10}$/.test(raw.replace(/\D/g, "")) && !isEmail;
+
+    let userId: string | null = null;
+    const { data: existingProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name")
+      .eq("auth_email", authEmail)
+      .maybeSingle();
+
+    if (existingProfile) {
+      userId = existingProfile.id;
+      await supabaseAdmin.auth.admin.updateUserById(userId, { password: DEMO_PASSWORD });
+    } else {
+      const created = await supabaseAdmin.auth.admin.createUser({
+        email: authEmail,
+        password: DEMO_PASSWORD,
+        email_confirm: true,
+        user_metadata: { role: data.role },
+      });
+      if (created.error || !created.data.user) {
+        throw new Error(created.error?.message ?? "Could not sign in. Please try again.");
+      }
+      userId = created.data.user.id;
+      await supabaseAdmin.from("profiles").upsert(
+        {
+          id: userId,
+          full_name: titleCase(slug),
+          email: isEmail ? raw.toLowerCase() : null,
+          mobile: isMobile ? raw.replace(/\D/g, "") : null,
+          auth_email: authEmail,
+          verified_channel: isMobile ? "mobile" : "email",
+          approval_status: "approved",
+          status: "active",
+        },
+        { onConflict: "id" },
+      );
+    }
+
+    await supabaseAdmin
+      .from("profiles")
+      .update({ approval_status: "approved", status: "active" })
+      .eq("id", userId);
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
+    await supabaseAdmin.from("user_roles").insert({ user_id: userId, role: data.role });
+
+    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+    const anon = createClient(process.env["SUPABASE_URL"]!, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: {
+        fetch: (input, init) => {
+          const h = new Headers(init?.headers);
+          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+          h.set("apikey", key);
+          return fetch(input, { ...init, headers: h });
+        },
+      },
+    });
+    const signIn = await anon.auth.signInWithPassword({ email: authEmail, password: DEMO_PASSWORD });
+    if (signIn.error || !signIn.data.session) throw new Error("Could not sign in. Please try again.");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("full_name")
+      .eq("id", userId)
+      .maybeSingle();
+
+    return {
+      accessToken: signIn.data.session.access_token,
+      refreshToken: signIn.data.session.refresh_token,
+      role: data.role,
+      fullName: profile?.full_name || titleCase(slug),
+    };
+  });

@@ -2,8 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import {
-  ArrowLeft,
-  BadgeCheck,
   Bot,
   BrainCircuit,
   GraduationCap,
@@ -17,14 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  completeSignup,
-  loginWithPassword,
-  startSignupOtp,
-  verifySignupOtp,
-  type PortalRole,
-  type StartOtpResult,
-} from "@/lib/auth.functions";
+import { demoLogin, type PortalRole } from "@/lib/auth.functions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -49,14 +40,11 @@ export const Route = createFileRoute("/")({
   component: AuthPage,
 });
 
-type Mode = "login" | "signup";
-type Step = "details" | "otp" | "password";
-
 const ROLE_OPTIONS: { id: PortalRole; label: string; icon: typeof UserRound; note: string }[] = [
-  { id: "student", label: "Student", icon: UserRound, note: "Self sign-up" },
-  { id: "faculty", label: "Faculty", icon: GraduationCap, note: "Faculty workflow" },
-  { id: "mentor", label: "Mentor", icon: Users, note: "Faculty approval" },
-  { id: "admin", label: "Admin", icon: UserCog, note: "Faculty approval" },
+  { id: "student", label: "Student", icon: UserRound, note: "Team & proposals" },
+  { id: "faculty", label: "Faculty", icon: GraduationCap, note: "Review & shortlist" },
+  { id: "mentor", label: "Mentor", icon: Users, note: "Guidance & teams" },
+  { id: "admin", label: "Admin", icon: UserCog, note: "Full administration" },
 ];
 
 function landingFor(role: PortalRole): string {
@@ -65,29 +53,12 @@ function landingFor(role: PortalRole): string {
 
 function AuthPage() {
   const navigate = useNavigate();
-  const startOtp = useServerFn(startSignupOtp);
-  const verifyOtpFn = useServerFn(verifySignupOtp);
-  const finishSignup = useServerFn(completeSignup);
-  const login = useServerFn(loginWithPassword);
+  const login = useServerFn(demoLogin);
 
-  const [mode, setMode] = useState<Mode>("login");
   const [role, setRole] = useState<PortalRole>("student");
-  const [step, setStep] = useState<Step>("details");
-
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [prn, setPrn] = useState("");
-  const [code, setCode] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const [identifier, setIdentifier] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-
-  const [challenge, setChallenge] = useState<StartOtpResult | null>(null);
   const [busy, setBusy] = useState(false);
-  const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
@@ -95,83 +66,12 @@ function AuthPage() {
     });
   }, [navigate]);
 
-  useEffect(() => {
-    if (seconds <= 0) return;
-    const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [seconds]);
-
-  function resetSignup() {
-    setStep("details");
-    setChallenge(null);
-    setCode("");
-    setPassword("");
-    setConfirmPassword("");
-  }
-
-  async function requestOtp() {
-    if (busy) return;
-    if (fullName.trim().length < 3) { toast.error("Enter your full name."); return; }
-    if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email.trim()))
-      { toast.error("Enter a valid email address (for example name@gmail.com)."); return; }
-    if (!/^\d{10}$/.test(mobile.trim())) { toast.error("Mobile number must be exactly 10 digits."); return; }
-
-    setBusy(true);
-    try {
-      const res = await startOtp({
-        data: { role, fullName, email, mobile, ...(prn.trim() ? { prn } : {}) },
-      });
-      setChallenge(res);
-      setCode("");
-      setStep("otp");
-      setSeconds(res.cooldownSeconds);
-      toast.success("Demo OTP generated — it is shown on screen.");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not start verification.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function submitOtp() {
-    if (busy || !challenge) return;
-    setBusy(true);
-    try {
-      await verifyOtpFn({ data: { challengeId: challenge.challengeId, code } });
-      setStep("password");
-      toast.success("OTP verified. Create your password.");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Verification failed.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function createAccount() {
-    if (busy || !challenge) return;
-    if (password !== confirmPassword) { toast.error("Passwords do not match."); return; }
-    setBusy(true);
-    try {
-      const res = await finishSignup({ data: { challengeId: challenge.challengeId, password, confirmPassword } });
-      if (res.approvalStatus === "pending") {
-        toast.success("Account created. It is awaiting Faculty approval before first sign in.");
-      } else {
-        toast.success("Account created. Please log in with your new password.");
-      }
-      resetSignup();
-      setMode("login");
-      setIdentifier(res.email);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not create the account.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   async function doLogin() {
     if (busy) return;
-    if (!identifier.trim()) { toast.error("Enter your registered email or mobile number."); return; }
-    if (!loginPassword) { toast.error("Enter your password."); return; }
+    if (!identifier.trim()) {
+      toast.error("Enter your email address or mobile number.");
+      return;
+    }
     setBusy(true);
     try {
       const res = await login({ data: { role, identifier, password: loginPassword } });
@@ -245,31 +145,9 @@ function AuthPage() {
           </div>
 
           <div className="surface-card p-6">
-            <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg bg-secondary p-1">
-              {(["login", "signup"] as Mode[]).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => {
-                    setMode(m);
-                    resetSignup();
-                  }}
-                  className={cn(
-                    "rounded-md py-2 text-sm font-semibold transition-colors",
-                    mode === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {m === "login" ? "Login" : "Sign up"}
-                </button>
-              ))}
-            </div>
-
-            <h2 className="font-display text-xl font-bold">
-              {mode === "login" ? "Welcome back" : "Create your JGI-SIH account"}
-            </h2>
+            <h2 className="font-display text-xl font-bold">Welcome back</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {mode === "login"
-                ? "Select your role, then sign in with your registered email or mobile and password."
-                : "Verify with a demo OTP, then create the password you will use to sign in."}
+              Choose your role, then sign in with your email or mobile number to open your portal.
             </p>
 
             <div className="mt-5">
@@ -279,10 +157,7 @@ function AuthPage() {
                   <button
                     type="button"
                     key={id}
-                    onClick={() => {
-                      setRole(id);
-                      resetSignup();
-                    }}
+                    onClick={() => setRole(id)}
                     className={cn(
                       "flex flex-col items-start gap-0.5 rounded-lg border px-3 py-2.5 text-left transition-colors",
                       role === id ? "border-primary bg-primary-soft text-primary" : "border-border hover:border-primary/40",
@@ -298,188 +173,41 @@ function AuthPage() {
               </div>
             </div>
 
-            {mode === "login" ? (
-              <form
-                className="mt-5 space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void doLogin();
-                }}
-              >
-                <Field label="Registered email or mobile number" required>
-                  <input
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="name@gmail.com or 9876543210"
-                    className="field"
-                    autoComplete="username"
-                  />
-                </Field>
-                <Field label="Password" required>
-                  <input
-                    type="password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    placeholder="Your password"
-                    className="field"
-                    autoComplete="current-password"
-                  />
-                </Field>
-                <Button type="submit" className="w-full" disabled={busy}>
-                  {busy ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
-                  Sign in
-                </Button>
-                <p className="rounded-lg bg-secondary px-3 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
-                  Your role is verified against the database. Selecting a different role on this screen never changes
-                  the permissions of your account.
-                </p>
-              </form>
-            ) : step === "details" ? (
-              <form
-                className="mt-5 space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void requestOtp();
-                }}
-              >
-                <Field label="Full name" required>
-                  <input
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="As per college records"
-                    className="field"
-                  />
-                </Field>
-                <Field label="Email ID" required>
-                  <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@gmail.com"
-                    inputMode="email"
-                    className="field"
-                  />
-                </Field>
-                <Field label="Mobile number (10 digits)" required>
-                  <input
-                    value={mobile}
-                    onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    placeholder="9876543210"
-                    inputMode="numeric"
-                    className="field"
-                  />
-                </Field>
-                {role === "student" && (
-                  <Field label="PRN (optional)">
-                    <input
-                      value={prn}
-                      onChange={(e) => setPrn(e.target.value)}
-                      placeholder="e.g. 72158847K"
-                      className="field"
-                    />
-                  </Field>
-                )}
-                <Button type="submit" className="w-full" disabled={busy}>
-                  {busy ? <Loader2 className="size-4 animate-spin" /> : null}
-                  Verify
-                </Button>
-                {(role === "mentor" || role === "admin") && (
-                  <p className="rounded-lg bg-secondary px-3 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
-                    {role === "mentor" ? "Mentor" : "Admin"} requests are created immediately but stay pending until a
-                    Faculty account approves them.
-                  </p>
-                )}
-              </form>
-            ) : step === "otp" && challenge ? (
-              <div className="mt-5">
-                <button
-                  onClick={resetSignup}
-                  className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="size-3.5" /> Change details
-                </button>
-                <span className="flex size-11 items-center justify-center rounded-xl bg-primary-soft text-primary">
-                  <BadgeCheck className="size-5" />
-                </span>
-                <h3 className="mt-4 font-display text-lg font-bold">Verify your identity</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Verification for <strong className="text-foreground">{challenge.maskedEmail}</strong> and mobile{" "}
-                  <strong className="text-foreground">{challenge.maskedMobile}</strong>. Valid for 10 minutes.
-                </p>
-                {challenge.demoCode ? (
-                  <div className="mt-3 rounded-lg border border-warning/40 bg-warning-soft px-3 py-2.5">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide">
-                      Demo OTP — for prototype testing only
-                    </p>
-                    <p className="mt-1 font-display text-2xl font-bold tracking-[0.35em]">{challenge.demoCode}</p>
-                  </div>
-                ) : null}
-
-                <form
-                  className="mt-5 space-y-4"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void submitOtp();
-                  }}
-                >
-                  <input
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="••••••"
-                    inputMode="numeric"
-                    autoFocus
-                    className="field text-center font-display text-2xl tracking-[0.5em]"
-                  />
-                  <Button type="submit" className="w-full" disabled={busy || code.length !== 6}>
-                    {busy ? <Loader2 className="size-4 animate-spin" /> : null}
-                    Verify OTP
-                  </Button>
-                </form>
-
-                <button
-                  onClick={() => void requestOtp()}
-                  disabled={seconds > 0 || busy}
-                  className="mt-4 w-full text-center text-xs font-medium text-primary disabled:text-muted-foreground"
-                >
-                  {seconds > 0 ? `Resend code in ${seconds}s` : "Resend OTP"}
-                </button>
-              </div>
-            ) : (
-              <form
-                className="mt-5 space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void createAccount();
-                }}
-              >
-                <div className="rounded-lg border border-success/40 bg-success-soft px-3 py-2 text-xs">
-                  OTP verified. Create the password you will use for every future login.
-                </div>
-                <Field label="Password" required>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Minimum 8 characters, with a letter and a number"
-                    className="field"
-                    autoComplete="new-password"
-                  />
-                </Field>
-                <Field label="Confirm password" required>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-enter your password"
-                    className="field"
-                    autoComplete="new-password"
-                  />
-                </Field>
-                <Button type="submit" className="w-full" disabled={busy}>
-                  {busy ? <Loader2 className="size-4 animate-spin" /> : null}
-                  Create account
-                </Button>
-              </form>
-            )}
+            <form
+              className="mt-5 space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void doLogin();
+              }}
+            >
+              <Field label="Email address or mobile number" required>
+                <input
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="name@gmail.com or 9876543210"
+                  className="field"
+                  autoComplete="username"
+                />
+              </Field>
+              <Field label="Password">
+                <input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="Your password"
+                  className="field"
+                  autoComplete="current-password"
+                />
+              </Field>
+              <Button type="submit" className="w-full" disabled={busy}>
+                {busy ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
+                Sign in
+              </Button>
+              <p className="rounded-lg bg-secondary px-3 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
+                Prototype demo access: sign in with the role you want to review. Your portal shows only the modules for
+                that role.
+              </p>
+            </form>
           </div>
         </div>
       </section>
