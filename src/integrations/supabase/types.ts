@@ -89,6 +89,53 @@ export type Database = {
         }
         Relationships: []
       }
+      campuses: {
+        Row: {
+          address: string | null
+          campus_code: string | null
+          campus_name: string
+          city: string | null
+          created_at: string
+          id: string
+          institution_id: string
+          state: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          campus_code?: string | null
+          campus_name: string
+          city?: string | null
+          created_at?: string
+          id?: string
+          institution_id: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          campus_code?: string | null
+          campus_name?: string
+          city?: string | null
+          created_at?: string
+          id?: string
+          institution_id?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campuses_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deadlines: {
         Row: {
           created_at: string
@@ -113,6 +160,80 @@ export type Database = {
           id?: string
           label?: string
           published?: boolean
+        }
+        Relationships: []
+      }
+      institution_domains: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          institution_id: string
+          updated_at: string
+          verification_status: string
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          institution_id: string
+          updated_at?: string
+          verification_status?: string
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          institution_id?: string
+          updated_at?: string
+          verification_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_domains_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institutions: {
+        Row: {
+          city: string | null
+          created_at: string
+          id: string
+          institution_type: string
+          official_name: string
+          short_name: string
+          state: string | null
+          status: string
+          university_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          institution_type?: string
+          official_name: string
+          short_name: string
+          state?: string | null
+          status?: string
+          university_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          institution_type?: string
+          official_name?: string
+          short_name?: string
+          state?: string | null
+          status?: string
+          university_name?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -211,11 +332,13 @@ export type Database = {
           approval_status: string
           auth_email: string | null
           campus: string | null
+          campus_id: string | null
           created_at: string
           department: string | null
           email: string | null
           full_name: string
           id: string
+          institution_id: string | null
           mobile: string | null
           prn: string | null
           status: string
@@ -226,11 +349,13 @@ export type Database = {
           approval_status?: string
           auth_email?: string | null
           campus?: string | null
+          campus_id?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
           full_name?: string
           id: string
+          institution_id?: string | null
           mobile?: string | null
           prn?: string | null
           status?: string
@@ -241,18 +366,35 @@ export type Database = {
           approval_status?: string
           auth_email?: string | null
           campus?: string | null
+          campus_id?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
           full_name?: string
           id?: string
+          institution_id?: string | null
           mobile?: string | null
           prn?: string | null
           status?: string
           updated_at?: string
           verified_channel?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_campus_id_fkey"
+            columns: ["campus_id"]
+            isOneToOne: false
+            referencedRelation: "campuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       results: {
         Row: {
