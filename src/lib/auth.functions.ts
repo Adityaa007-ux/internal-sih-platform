@@ -353,6 +353,8 @@ export interface SessionInfo {
     verified_channel: string;
     status: string;
     approval_status: string;
+    institution_name: string | null;
+    campus_name: string | null;
   } | null;
 }
 
@@ -363,7 +365,9 @@ export const getSessionInfo = createServerFn({ method: "GET" })
     const [{ data: profile }, { data: roleRows }] = await Promise.all([
       supabase
         .from("profiles")
-        .select("prn, full_name, email, mobile, department, campus, verified_channel, status, approval_status")
+        .select(
+          "prn, full_name, email, mobile, department, campus, verified_channel, status, approval_status, institution_id, campus_id",
+        )
         .eq("id", userId)
         .maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", userId),
@@ -371,7 +375,34 @@ export const getSessionInfo = createServerFn({ method: "GET" })
     const roles = (roleRows ?? []).map((r) => String(r.role) as PortalRole);
     const priority: PortalRole[] = ["admin", "faculty", "mentor", "student"];
     const role = priority.find((r) => roles.includes(r)) ?? "student";
-    return { userId, role, roles: roles.length ? roles : ["student"], profile: profile ?? null };
+
+    let institutionName: string | null = null;
+    let campusName: string | null = null;
+    if (profile?.institution_id) {
+      const { data: inst } = await supabase
+        .from("institutions")
+        .select("short_name, official_name")
+        .eq("id", profile.institution_id)
+        .maybeSingle();
+      institutionName = inst?.short_name ?? inst?.official_name ?? null;
+    }
+    if (profile?.campus_id) {
+      const { data: camp } = await supabase
+        .from("campuses")
+        .select("campus_name")
+        .eq("id", profile.campus_id)
+        .maybeSingle();
+      campusName = camp?.campus_name ?? null;
+    }
+
+    return {
+      userId,
+      role,
+      roles: roles.length ? roles : ["student"],
+      profile: profile
+        ? { ...profile, institution_name: institutionName, campus_name: campusName ?? profile.campus }
+        : null,
+    };
   });
 
 const profileSchema = z.object({
@@ -391,108 +422,156 @@ export const updateMyProfile = createServerFn({ method: "POST" })
   });
 
 /* ------------------------------------------------------------------ */
-/* Demo login — presentation mode                                       */
-/* Any email / mobile + any password signs in as the selected role.     */
+/* Registration — runs after a REAL email OTP has been verified        */
 /* ------------------------------------------------------------------ */
 
-const demoLoginSchema = z.object({
+const registrationSchema = z.object({
   role: z.enum(ROLES),
-  identifier: z.string().trim().min(1).max(160),
-  password: z.string().max(200).optional(),
+  fullName: z.string().trim().min(3, "Enter your full name.").max(120),
+  institutionId: z.string().uuid("Select your institution."),
+  campusId: z.string().uuid("Select your campus."),
+  prn: z.string().trim().max(30).optional(),
+  mobile: z.string().trim().max(20).optional(),
+  password: z.string().min(1),
+  confirmPassword: z.string().min(1),
+  humanToken: z.string().min(1),
+  humanAnswer: z.string().min(1, "Complete the human verification."),
 });
 
-export const demoLogin = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => demoLoginSchema.parse(data))
-  .handler(async ({ data }): Promise<LoginResult> => {
+export interface RegistrationResult {
+  role: PortalRole;
+  approvalStatus: "approved" | "pending";
+  email: string;
+  fullName: string;
+}
+
+export const finalizeRegistration = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => registrationSchema.parse(data))
+  .handler(async ({ data, context }): Promise<RegistrationResult> => {
+    const { verifyHumanAnswer } = await import("./human-check.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { createClient } = await import("@supabase/supabase-js");
 
-    const DEMO_PASSWORD = "JGI-SIH-demo-2026!";
-    const demoSlug = (value: string): string => {
-      const base = value.trim().toLowerCase().split("@")[0] ?? "guest";
-      return base.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "guest";
-    };
-    const titleCase = (value: string): string =>
-      value
-        .split(/[-_.]+/)
-        .filter(Boolean)
-        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-        .join(" ");
+    if (!(await verifyHumanAnswer(data.humanToken, data.humanAnswer)))
+      throw new Error("Human verification failed. Please try the new question.");
+    if (data.password !== data.confirmPassword) throw new Error("Passwords do not match.");
 
-    const raw = data.identifier.trim();
-    const slug = demoSlug(raw);
-    const authEmail = `${data.role}.${slug}@jgi-sih.demo`;
-    const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(raw);
-    const isMobile = /^\d{10}$/.test(raw.replace(/\D/g, "")) && !isEmail;
-
-    let userId: string | null = null;
-    const { data: existingProfile } = await supabaseAdmin
-      .from("profiles")
-      .select("id, full_name")
-      .eq("auth_email", authEmail)
-      .maybeSingle();
-
-    if (existingProfile) {
-      userId = existingProfile.id;
-      await supabaseAdmin.auth.admin.updateUserById(userId, { password: DEMO_PASSWORD });
-    } else {
-      const created = await supabaseAdmin.auth.admin.createUser({
-        email: authEmail,
-        password: DEMO_PASSWORD,
-        email_confirm: true,
-        user_metadata: { role: data.role },
-      });
-      if (created.error || !created.data.user) {
-        throw new Error(created.error?.message ?? "Could not sign in. Please try again.");
-      }
-      userId = created.data.user.id;
-      await supabaseAdmin.from("profiles").upsert(
-        {
-          id: userId,
-          full_name: titleCase(slug),
-          email: isEmail ? raw.toLowerCase() : null,
-          mobile: isMobile ? raw.replace(/\D/g, "") : null,
-          auth_email: authEmail,
-          verified_channel: isMobile ? "mobile" : "email",
-          approval_status: "approved",
-          status: "active",
-        },
-        { onConflict: "id" },
+    const strong =
+      data.password.length >= 8 &&
+      /[A-Z]/.test(data.password) &&
+      /[a-z]/.test(data.password) &&
+      /\d/.test(data.password) &&
+      /[^A-Za-z0-9]/.test(data.password);
+    if (!strong)
+      throw new Error(
+        "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number and a special character.",
       );
-    }
 
-    await supabaseAdmin
+    const userId = context.userId;
+    const email = String(context.claims?.["email"] ?? "").toLowerCase();
+    if (!email) throw new Error("Your verified email could not be read. Please restart the sign up.");
+
+    // A campus must genuinely belong to the chosen institution.
+    const { data: campus } = await supabaseAdmin
+      .from("campuses")
+      .select("id, institution_id, campus_name")
+      .eq("id", data.campusId)
+      .maybeSingle();
+    if (!campus || campus.institution_id !== data.institutionId)
+      throw new Error("The selected campus is not valid for this institution.");
+
+    const { data: existing } = await supabaseAdmin
       .from("profiles")
-      .update({ approval_status: "approved", status: "active" })
-      .eq("id", userId);
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
-    await supabaseAdmin.from("user_roles").insert({ user_id: userId, role: data.role });
-
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-    const anon = createClient(process.env["SUPABASE_URL"]!, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-      global: {
-        fetch: (input, init) => {
-          const h = new Headers(init?.headers);
-          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
-          h.set("apikey", key);
-          return fetch(input, { ...init, headers: h });
-        },
-      },
-    });
-    const signIn = await anon.auth.signInWithPassword({ email: authEmail, password: DEMO_PASSWORD });
-    if (signIn.error || !signIn.data.session) throw new Error("Could not sign in. Please try again.");
-
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("full_name")
+      .select("id")
       .eq("id", userId)
       .maybeSingle();
+    const { data: dupe } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .neq("id", userId)
+      .maybeSingle();
+    if (dupe) throw new Error("This email address is already registered. Please log in instead.");
 
+    // Staff roles are never self-granted: they stay pending until an approver acts.
+    const { count: staffCount } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id", { count: "exact", head: true })
+      .in("role", ["admin", "faculty"]);
+    const bootstrap = (staffCount ?? 0) === 0;
+    const approvalStatus: "approved" | "pending" =
+      data.role === "student" ? "approved" : bootstrap && data.role !== "mentor" ? "approved" : "pending";
+
+    const pwUpdate = await supabaseAdmin.auth.admin.updateUserById(userId, {
+      password: data.password,
+      email_confirm: true,
+      user_metadata: { full_name: data.fullName.trim(), role: data.role },
+    });
+    if (pwUpdate.error) throw new Error("Could not save your password. Please try again.");
+
+    const upsert = await supabaseAdmin.from("profiles").upsert(
+      {
+        id: userId,
+        full_name: data.fullName.trim(),
+        email,
+        auth_email: email,
+        mobile: data.mobile?.replace(/\D/g, "") || null,
+        prn: data.prn?.trim().toUpperCase() || null,
+        institution_id: data.institutionId,
+        campus_id: campus.id,
+        campus: campus.campus_name,
+        verified_channel: "email",
+        approval_status: approvalStatus,
+        status: "active",
+      },
+      { onConflict: "id" },
+    );
+    if (upsert.error) throw new Error(upsert.error.message);
+
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
+    await supabaseAdmin.from("user_roles").insert({ user_id: userId, role: data.role });
+    await supabaseAdmin.from("audit_log").insert({
+      actor: userId,
+      actor_label: data.fullName.trim(),
+      action: existing ? "account.updated" : "account.signup",
+      detail: `${data.role} account created (${approvalStatus})`,
+    });
+
+    return { role: data.role, approvalStatus, email, fullName: data.fullName.trim() };
+  });
+
+/* ------------------------------------------------------------------ */
+/* Server-side gate used after an OTP-based sign in                     */
+/* ------------------------------------------------------------------ */
+
+export interface AccountGate {
+  role: PortalRole;
+  fullName: string;
+  registered: boolean;
+}
+
+export const assertAccountActive = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AccountGate> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("full_name, approval_status, status")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (!profile) return { role: "student", fullName: "", registered: false };
+    if (profile.approval_status === "pending")
+      throw new Error("Your account is awaiting approval. You will be able to sign in once it is approved.");
+    if (profile.approval_status === "rejected" || profile.status === "suspended")
+      throw new Error("This account is not active. Please contact the Internal SIH coordination cell.");
+
+    const { data: roleRows } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", context.userId);
+    const roles = (roleRows ?? []).map((r) => String(r.role));
+    const priority: PortalRole[] = ["admin", "faculty", "mentor", "student"];
     return {
-      accessToken: signIn.data.session.access_token,
-      refreshToken: signIn.data.session.refresh_token,
-      role: data.role,
-      fullName: profile?.full_name || titleCase(slug),
+      role: priority.find((r) => roles.includes(r)) ?? "student",
+      fullName: profile.full_name ?? "",
+      registered: true,
     };
   });
+
