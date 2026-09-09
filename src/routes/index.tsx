@@ -152,14 +152,14 @@ function AuthPage() {
 
   async function sendLoginOtp() {
     if (busy || cooldown > 0) return;
-    if (!email.trim()) return toast.error("Enter your registered email address.");
+    if (!email.trim()) { toast.error("Enter your registered email address."); return; }
     setBusy(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
       options: { shouldCreateUser: false },
     });
     setBusy(false);
-    if (error) return toast.error(otpError(error.message));
+    if (error) { toast.error(otpError(error.message)); return; }
     setCooldown(45);
     setLoginStep("otp");
     toast.success("A 6-digit code has been emailed to you.");
@@ -175,7 +175,7 @@ function AuthPage() {
         type: "email",
       });
       if (error) throw new Error("Incorrect or expired code. Please try again.");
-      const info = await gate({ data: {} });
+      const info = await gate({});
       if (!info.registered) {
         await supabase.auth.signOut();
         throw new Error("Please complete your registration first.");
@@ -192,7 +192,7 @@ function AuthPage() {
 
   async function sendReset() {
     if (busy) return;
-    if (!email.trim()) return toast.error("Enter your registered email address.");
+    if (!email.trim()) { toast.error("Enter your registered email address."); return; }
     setBusy(true);
     await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -234,16 +234,16 @@ function AuthPage() {
 
   async function sendSignupOtp() {
     if (busy || cooldown > 0) return;
-    if (fullName.trim().length < 3) return toast.error("Enter your full name.");
-    if (!institution) return toast.error("Select your institution.");
-    if (!campusId) return toast.error("Select your campus.");
+    if (fullName.trim().length < 3) { toast.error("Enter your full name."); return; }
+    if (!institution) { toast.error("Select your institution."); return; }
+    if (!campusId) { toast.error("Select your campus."); return; }
     setBusy(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
       options: { shouldCreateUser: true },
     });
     setBusy(false);
-    if (error) return toast.error(otpError(error.message));
+    if (error) { toast.error(otpError(error.message)); return; }
     setCooldown(45);
     setStep("otp");
     toast.success("Verification code sent to your email.");
