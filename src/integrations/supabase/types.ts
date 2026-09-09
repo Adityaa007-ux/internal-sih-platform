@@ -163,6 +163,81 @@ export type Database = {
         }
         Relationships: []
       }
+      industrial_mentor_profiles: {
+        Row: {
+          accepting_requests: boolean
+          bio: string
+          certifications: string | null
+          company: string
+          contact_email: string
+          created_at: string
+          designation: string
+          experience_years: number
+          expertise: string
+          full_name: string
+          id: string
+          industry: string
+          linkedin_url: string
+          mentor_scope: string
+          mobile: string
+          photo_url: string | null
+          portfolio_url: string | null
+          skills: string
+          status: string
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          accepting_requests?: boolean
+          bio?: string
+          certifications?: string | null
+          company: string
+          contact_email: string
+          created_at?: string
+          designation: string
+          experience_years?: number
+          expertise?: string
+          full_name: string
+          id?: string
+          industry?: string
+          linkedin_url: string
+          mentor_scope?: string
+          mobile: string
+          photo_url?: string | null
+          portfolio_url?: string | null
+          skills?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          accepting_requests?: boolean
+          bio?: string
+          certifications?: string | null
+          company?: string
+          contact_email?: string
+          created_at?: string
+          designation?: string
+          experience_years?: number
+          expertise?: string
+          full_name?: string
+          id?: string
+          industry?: string
+          linkedin_url?: string
+          mentor_scope?: string
+          mobile?: string
+          photo_url?: string | null
+          portfolio_url?: string | null
+          skills?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       institution_domains: {
         Row: {
           created_at: string
@@ -237,6 +312,38 @@ export type Database = {
         }
         Relationships: []
       }
+      mentor_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          request_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          request_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          request_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "mentorship_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mentors: {
         Row: {
           active: boolean
@@ -272,6 +379,63 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      mentorship_requests: {
+        Row: {
+          created_at: string
+          id: string
+          institution_id: string | null
+          mentor_user_id: string
+          message: string
+          responded_at: string | null
+          response_note: string
+          status: string
+          student_id: string
+          team_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          institution_id?: string | null
+          mentor_user_id: string
+          message?: string
+          responded_at?: string | null
+          response_note?: string
+          status?: string
+          student_id: string
+          team_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          institution_id?: string | null
+          mentor_user_id?: string
+          message?: string
+          responded_at?: string | null
+          response_note?: string
+          status?: string
+          student_id?: string
+          team_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentorship_requests_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mentorship_requests_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       otp_challenges: {
         Row: {
@@ -533,6 +697,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sessions: {
+        Row: {
+          created_at: string
+          device_label: string
+          expires_at: string
+          id: string
+          institution_id: string | null
+          last_activity_at: string
+          revoked_at: string | null
+          role: string | null
+          session_token_hash: string
+          status: string
+          user_agent: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_label?: string
+          expires_at?: string
+          id?: string
+          institution_id?: string | null
+          last_activity_at?: string
+          revoked_at?: string | null
+          role?: string | null
+          session_token_hash: string
+          status?: string
+          user_agent?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_label?: string
+          expires_at?: string
+          id?: string
+          institution_id?: string | null
+          last_activity_at?: string
+          revoked_at?: string | null
+          role?: string | null
+          session_token_hash?: string
+          status?: string
+          user_agent?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sessions_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -543,6 +760,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_request_participant: {
+        Args: { _request_id: string; _user_id: string }
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
