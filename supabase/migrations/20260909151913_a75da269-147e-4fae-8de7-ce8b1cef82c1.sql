@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.is_request_participant(uuid, uuid) FROM anon, public;
