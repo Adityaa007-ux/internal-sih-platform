@@ -20,6 +20,8 @@ import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDeadlinesRouteImport } from './routes/_authenticated/deadlines'
 import { Route as AuthenticatedFacultyReviewRouteImport } from './routes/_authenticated/faculty-review'
+import { Route as AuthenticatedIndustrialMentorRouteImport } from './routes/_authenticated/industrial-mentor'
+import { Route as AuthenticatedMentorHubRouteImport } from './routes/_authenticated/mentor-hub'
 import { Route as AuthenticatedMyTeamRouteImport } from './routes/_authenticated/my-team'
 import { Route as AuthenticatedPresentationRouteImport } from './routes/_authenticated/presentation'
 import { Route as AuthenticatedProblemsRouteImport } from './routes/_authenticated/problems'
@@ -27,6 +29,7 @@ import { Route as AuthenticatedProposalRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedRecommendationsRouteImport } from './routes/_authenticated/recommendations'
 import { Route as AuthenticatedRepositoryRouteImport } from './routes/_authenticated/repository'
 import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
+import { Route as AuthenticatedSessionsRouteImport } from './routes/_authenticated/sessions'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedShortlistRouteImport } from './routes/_authenticated/shortlist'
 import { Route as AuthenticatedSimilarityRouteImport } from './routes/_authenticated/similarity'
@@ -91,6 +94,17 @@ const AuthenticatedFacultyReviewRoute =
     path: '/faculty-review',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedIndustrialMentorRoute =
+  AuthenticatedIndustrialMentorRouteImport.update({
+    id: '/industrial-mentor',
+    path: '/industrial-mentor',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMentorHubRoute = AuthenticatedMentorHubRouteImport.update({
+  id: '/mentor-hub',
+  path: '/mentor-hub',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMyTeamRoute = AuthenticatedMyTeamRouteImport.update({
   id: '/my-team',
   path: '/my-team',
@@ -126,6 +140,11 @@ const AuthenticatedRepositoryRoute = AuthenticatedRepositoryRouteImport.update({
 const AuthenticatedResultsRoute = AuthenticatedResultsRouteImport.update({
   id: '/results',
   path: '/results',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSessionsRoute = AuthenticatedSessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -178,6 +197,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deadlines': typeof AuthenticatedDeadlinesRoute
   '/faculty-review': typeof AuthenticatedFacultyReviewRoute
+  '/industrial-mentor': typeof AuthenticatedIndustrialMentorRoute
+  '/mentor-hub': typeof AuthenticatedMentorHubRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
   '/presentation': typeof AuthenticatedPresentationRoute
   '/problems': typeof AuthenticatedProblemsRoute
@@ -185,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/recommendations': typeof AuthenticatedRecommendationsRoute
   '/repository': typeof AuthenticatedRepositoryRoute
   '/results': typeof AuthenticatedResultsRoute
+  '/sessions': typeof AuthenticatedSessionsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shortlist': typeof AuthenticatedShortlistRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
@@ -203,6 +225,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/deadlines': typeof AuthenticatedDeadlinesRoute
   '/faculty-review': typeof AuthenticatedFacultyReviewRoute
+  '/industrial-mentor': typeof AuthenticatedIndustrialMentorRoute
+  '/mentor-hub': typeof AuthenticatedMentorHubRoute
   '/my-team': typeof AuthenticatedMyTeamRoute
   '/presentation': typeof AuthenticatedPresentationRoute
   '/problems': typeof AuthenticatedProblemsRoute
@@ -210,6 +234,7 @@ export interface FileRoutesByTo {
   '/recommendations': typeof AuthenticatedRecommendationsRoute
   '/repository': typeof AuthenticatedRepositoryRoute
   '/results': typeof AuthenticatedResultsRoute
+  '/sessions': typeof AuthenticatedSessionsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shortlist': typeof AuthenticatedShortlistRoute
   '/similarity': typeof AuthenticatedSimilarityRoute
@@ -231,6 +256,8 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/deadlines': typeof AuthenticatedDeadlinesRoute
   '/_authenticated/faculty-review': typeof AuthenticatedFacultyReviewRoute
+  '/_authenticated/industrial-mentor': typeof AuthenticatedIndustrialMentorRoute
+  '/_authenticated/mentor-hub': typeof AuthenticatedMentorHubRoute
   '/_authenticated/my-team': typeof AuthenticatedMyTeamRoute
   '/_authenticated/presentation': typeof AuthenticatedPresentationRoute
   '/_authenticated/problems': typeof AuthenticatedProblemsRoute
@@ -238,6 +265,7 @@ export interface FileRoutesById {
   '/_authenticated/recommendations': typeof AuthenticatedRecommendationsRoute
   '/_authenticated/repository': typeof AuthenticatedRepositoryRoute
   '/_authenticated/results': typeof AuthenticatedResultsRoute
+  '/_authenticated/sessions': typeof AuthenticatedSessionsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shortlist': typeof AuthenticatedShortlistRoute
   '/_authenticated/similarity': typeof AuthenticatedSimilarityRoute
@@ -259,6 +287,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/deadlines'
     | '/faculty-review'
+    | '/industrial-mentor'
+    | '/mentor-hub'
     | '/my-team'
     | '/presentation'
     | '/problems'
@@ -266,6 +296,7 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/repository'
     | '/results'
+    | '/sessions'
     | '/settings'
     | '/shortlist'
     | '/similarity'
@@ -284,6 +315,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/deadlines'
     | '/faculty-review'
+    | '/industrial-mentor'
+    | '/mentor-hub'
     | '/my-team'
     | '/presentation'
     | '/problems'
@@ -291,6 +324,7 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/repository'
     | '/results'
+    | '/sessions'
     | '/settings'
     | '/shortlist'
     | '/similarity'
@@ -311,6 +345,8 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/deadlines'
     | '/_authenticated/faculty-review'
+    | '/_authenticated/industrial-mentor'
+    | '/_authenticated/mentor-hub'
     | '/_authenticated/my-team'
     | '/_authenticated/presentation'
     | '/_authenticated/problems'
@@ -318,6 +354,7 @@ export interface FileRouteTypes {
     | '/_authenticated/recommendations'
     | '/_authenticated/repository'
     | '/_authenticated/results'
+    | '/_authenticated/sessions'
     | '/_authenticated/settings'
     | '/_authenticated/shortlist'
     | '/_authenticated/similarity'
@@ -412,6 +449,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFacultyReviewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/industrial-mentor': {
+      id: '/_authenticated/industrial-mentor'
+      path: '/industrial-mentor'
+      fullPath: '/industrial-mentor'
+      preLoaderRoute: typeof AuthenticatedIndustrialMentorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mentor-hub': {
+      id: '/_authenticated/mentor-hub'
+      path: '/mentor-hub'
+      fullPath: '/mentor-hub'
+      preLoaderRoute: typeof AuthenticatedMentorHubRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/my-team': {
       id: '/_authenticated/my-team'
       path: '/my-team'
@@ -459,6 +510,13 @@ declare module '@tanstack/react-router' {
       path: '/results'
       fullPath: '/results'
       preLoaderRoute: typeof AuthenticatedResultsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sessions': {
+      id: '/_authenticated/sessions'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof AuthenticatedSessionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -538,6 +596,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDeadlinesRoute: typeof AuthenticatedDeadlinesRoute
   AuthenticatedFacultyReviewRoute: typeof AuthenticatedFacultyReviewRoute
+  AuthenticatedIndustrialMentorRoute: typeof AuthenticatedIndustrialMentorRoute
+  AuthenticatedMentorHubRoute: typeof AuthenticatedMentorHubRoute
   AuthenticatedMyTeamRoute: typeof AuthenticatedMyTeamRoute
   AuthenticatedPresentationRoute: typeof AuthenticatedPresentationRoute
   AuthenticatedProblemsRoute: typeof AuthenticatedProblemsRoute
@@ -545,6 +605,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRecommendationsRoute: typeof AuthenticatedRecommendationsRoute
   AuthenticatedRepositoryRoute: typeof AuthenticatedRepositoryRoute
   AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
+  AuthenticatedSessionsRoute: typeof AuthenticatedSessionsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedShortlistRoute: typeof AuthenticatedShortlistRoute
   AuthenticatedSimilarityRoute: typeof AuthenticatedSimilarityRoute
@@ -561,6 +622,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDeadlinesRoute: AuthenticatedDeadlinesRoute,
   AuthenticatedFacultyReviewRoute: AuthenticatedFacultyReviewRoute,
+  AuthenticatedIndustrialMentorRoute: AuthenticatedIndustrialMentorRoute,
+  AuthenticatedMentorHubRoute: AuthenticatedMentorHubRoute,
   AuthenticatedMyTeamRoute: AuthenticatedMyTeamRoute,
   AuthenticatedPresentationRoute: AuthenticatedPresentationRoute,
   AuthenticatedProblemsRoute: AuthenticatedProblemsRoute,
@@ -568,6 +631,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRecommendationsRoute: AuthenticatedRecommendationsRoute,
   AuthenticatedRepositoryRoute: AuthenticatedRepositoryRoute,
   AuthenticatedResultsRoute: AuthenticatedResultsRoute,
+  AuthenticatedSessionsRoute: AuthenticatedSessionsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedShortlistRoute: AuthenticatedShortlistRoute,
   AuthenticatedSimilarityRoute: AuthenticatedSimilarityRoute,
