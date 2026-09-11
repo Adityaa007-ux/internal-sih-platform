@@ -3,6 +3,8 @@ import {
   BadgeCheck,
   BarChart3,
   Bell,
+  Briefcase,
+  MonitorSmartphone,
   Bot,
   Building2,
   Database,
@@ -65,6 +67,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { to: "/problems", label: "Problem Explorer", icon: FileSearch, roles: ["student", "faculty", "mentor", "admin"] },
       { to: "/repository", label: "SIH 2025 Repository", icon: Database, roles: ["student", "faculty", "mentor", "admin"] },
       { to: "/proposal", label: "Proposal Submission", icon: FileText, roles: ["student"] },
+      { to: "/industrial-mentor", label: "Industrial Mentor", icon: Briefcase, roles: ["student"] },
+      { to: "/mentor-hub", label: "Industrial Mentor Hub", icon: Briefcase, roles: ["mentor", "faculty", "admin"] },
     ],
   },
   {
@@ -100,6 +104,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { to: "/announcements", label: "Announcements", icon: Megaphone, roles: ["student", "faculty", "mentor", "admin"] },
       { to: "/deadlines", label: "Deadlines", icon: CalendarClock, roles: ["student", "faculty", "mentor", "admin"] },
       { to: "/settings", label: "Settings", icon: Settings, roles: ["student", "faculty", "mentor", "admin"] },
+      { to: "/sessions", label: "Devices & Sessions", icon: MonitorSmartphone, roles: ["student", "faculty", "mentor", "admin"] },
     ],
   },
 ];
