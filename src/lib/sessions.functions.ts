@@ -87,8 +87,10 @@ export const listMySessions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<SessionRow[]> => {
     const { hashSessionId } = await import("./sessions.server");
-    const sid = claimSessionId(context.claims as Record<string, unknown>);
-    const currentHash = sid ? await hashSessionId(sid) : "";
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const currentHash = await hashSessionId(
+      sessionKey(context.claims as Record<string, unknown>, context.userId, getRequestHeader("user-agent") ?? ""),
+    );
 
     const { data } = await context.supabase
       .from("user_sessions")
