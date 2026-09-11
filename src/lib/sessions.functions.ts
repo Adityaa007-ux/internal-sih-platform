@@ -18,6 +18,19 @@ function claimSessionId(claims: Record<string, unknown> | undefined): string {
 }
 
 /**
+ * Stable identifier for one login on one device. Uses the auth session id when
+ * the token carries one, otherwise falls back to a per-user/per-device key so
+ * each browser still gets its own session row.
+ */
+function sessionKey(
+  claims: Record<string, unknown> | undefined,
+  userId: string,
+  userAgent: string,
+): string {
+  return claimSessionId(claims) || `device:${userId}:${userAgent}`;
+}
+
+/**
  * Records (or refreshes) the login session for the signed-in user.
  * One row per device/browser session; permanent app data is never touched here.
  */
@@ -28,10 +41,10 @@ export const registerSession = createServerFn({ method: "POST" })
     const { getRequestHeader } = await import("@tanstack/react-start/server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const sid = claimSessionId(context.claims as Record<string, unknown>);
-    if (!sid) return { ok: false, revoked: false };
-    const tokenHash = await hashSessionId(sid);
     const userAgent = getRequestHeader("user-agent") ?? "";
+    const tokenHash = await hashSessionId(
+      sessionKey(context.claims as Record<string, unknown>, context.userId, userAgent),
+    );
 
     const { data: existing } = await supabaseAdmin
       .from("user_sessions")
@@ -74,8 +87,10 @@ export const listMySessions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<SessionRow[]> => {
     const { hashSessionId } = await import("./sessions.server");
-    const sid = claimSessionId(context.claims as Record<string, unknown>);
-    const currentHash = sid ? await hashSessionId(sid) : "";
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const currentHash = await hashSessionId(
+      sessionKey(context.claims as Record<string, unknown>, context.userId, getRequestHeader("user-agent") ?? ""),
+    );
 
     const { data } = await context.supabase
       .from("user_sessions")

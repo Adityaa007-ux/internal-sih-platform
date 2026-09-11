@@ -3,9 +3,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionInfo, type SessionInfo, type PortalRole } from "@/lib/auth.functions";
+import { registerSession } from "@/lib/sessions.functions";
 
 export function useSession() {
   const fetchSession = useServerFn(getSessionInfo);
+  const trackSession = useServerFn(registerSession);
   const [hasToken, setHasToken] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -17,6 +19,19 @@ export function useSession() {
       active = false;
     };
   }, []);
+
+  // Record this browser/device as its own login session. If the session was
+  // signed out from another device, end it here too.
+  useEffect(() => {
+    if (hasToken !== true) return;
+    void trackSession()
+      .then((r) => {
+        if (r?.revoked) void signOutEverywhere();
+      })
+      .catch(() => {
+        /* session tracking must never block the app */
+      });
+  }, [hasToken, trackSession]);
 
   const query = useQuery<SessionInfo>({
     queryKey: ["session-info"],

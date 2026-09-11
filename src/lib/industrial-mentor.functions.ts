@@ -163,6 +163,17 @@ export const sendMentorshipRequest = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertRole(context.supabase, context.userId, ["student"]);
+
+    // The mentor must actually be an active industrial mentor accepting requests.
+    const { data: mentorProfile } = await context.supabase
+      .from("industrial_mentor_profiles")
+      .select("user_id")
+      .eq("user_id", data.mentorUserId)
+      .eq("status", "active")
+      .eq("accepting_requests", true)
+      .maybeSingle();
+    if (!mentorProfile) throw new Error("This mentor is not accepting requests right now.");
+
     const { data: profile } = await context.supabase
       .from("profiles")
       .select("institution_id")
