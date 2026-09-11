@@ -29,6 +29,7 @@ export const registerSession = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const sid = claimSessionId(context.claims as Record<string, unknown>);
+    console.log("[session] claim keys", Object.keys((context.claims ?? {}) as object).join(","), "sid=", sid);
     if (!sid) return { ok: false, revoked: false };
     const tokenHash = await hashSessionId(sid);
     const userAgent = getRequestHeader("user-agent") ?? "";
