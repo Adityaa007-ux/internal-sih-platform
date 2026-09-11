@@ -18,6 +18,19 @@ function claimSessionId(claims: Record<string, unknown> | undefined): string {
 }
 
 /**
+ * Stable identifier for one login on one device. Uses the auth session id when
+ * the token carries one, otherwise falls back to a per-user/per-device key so
+ * each browser still gets its own session row.
+ */
+function sessionKey(
+  claims: Record<string, unknown> | undefined,
+  userId: string,
+  userAgent: string,
+): string {
+  return claimSessionId(claims) || `device:${userId}:${userAgent}`;
+}
+
+/**
  * Records (or refreshes) the login session for the signed-in user.
  * One row per device/browser session; permanent app data is never touched here.
  */
