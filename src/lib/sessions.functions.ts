@@ -41,11 +41,10 @@ export const registerSession = createServerFn({ method: "POST" })
     const { getRequestHeader } = await import("@tanstack/react-start/server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const sid = claimSessionId(context.claims as Record<string, unknown>);
-    console.log("[session] claim keys", Object.keys((context.claims ?? {}) as object).join(","), "sid=", sid);
-    if (!sid) return { ok: false, revoked: false };
-    const tokenHash = await hashSessionId(sid);
     const userAgent = getRequestHeader("user-agent") ?? "";
+    const tokenHash = await hashSessionId(
+      sessionKey(context.claims as Record<string, unknown>, context.userId, userAgent),
+    );
 
     const { data: existing } = await supabaseAdmin
       .from("user_sessions")
