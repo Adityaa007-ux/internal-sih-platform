@@ -20,6 +20,19 @@ export function useSession() {
     };
   }, []);
 
+  // Record this browser/device as its own login session. If the session was
+  // signed out from another device, end it here too.
+  useEffect(() => {
+    if (hasToken !== true) return;
+    void trackSession()
+      .then((r) => {
+        if (r?.revoked) void signOutEverywhere();
+      })
+      .catch(() => {
+        /* session tracking must never block the app */
+      });
+  }, [hasToken, trackSession]);
+
   const query = useQuery<SessionInfo>({
     queryKey: ["session-info"],
     queryFn: () => fetchSession(),
